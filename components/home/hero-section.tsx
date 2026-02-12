@@ -5,6 +5,7 @@ import { ArrowDown, MapPin, Zap, Navigation } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import heroBg from "../../public/BARB.jpg";
+
 // CONFIGURATION
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY || "";
 const CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_ID || "";
@@ -13,6 +14,9 @@ export function HeroSection() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [nextRun, setNextRun] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // NEW: State for image fade-in
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // 1. FETCH DATA & PARSE MULTIPLE DISTANCES
   useEffect(() => {
@@ -104,17 +108,21 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-20 pb-20 xl:pt-0 xl:pb-0">
       
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      {/* Background Image - UPDATED FOR FADE IN */}
+      <div className="absolute inset-0 z-0 bg-neutral-900">
         <Image
           src={heroBg}
           alt="Runners at dawn"
           fill
           placeholder="blur"
-          className="object-cover object-center"
+          // UPDATED CLASSNAME FOR FADE
+          className={`object-cover object-center transition-opacity duration-1000 ease-out ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
           quality={85}
           priority
-          
+          // ADDED ONLOAD HANDLER
+          onLoad={() => setImageLoaded(true)}
         />
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />

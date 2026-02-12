@@ -4,6 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Instagram, ArrowUpRight, Activity, Music2 } from 'lucide-react'; // Added Music2 for TikTok
 import Image from 'next/image';
+import tribe from "../../public/tribe.jpg"; 
 
 export function CommunitySection() {
   const ref = useRef(null);
@@ -59,8 +60,9 @@ We're runners, creatives, and dreamers reclaiming the streets of Nairobi, one st
           {/* MAIN PHOTO CARD (Left Side - 8 Cols) */}
           <motion.div variants={itemVars} className="md:col-span-8 relative group overflow-hidden rounded-2xl bg-neutral-900 border border-white/10 h-[300px] md:h-full">
             <Image 
-              src="/tribe.jpg"
+              src={tribe}
               alt="Group Run High Five"
+              placeholder="blur"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
             />
