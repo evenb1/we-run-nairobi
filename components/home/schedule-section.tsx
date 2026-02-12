@@ -17,6 +17,7 @@ interface RunType {
     distances: string;
     badge: string; 
     image: string;
+    mapUrl: string;
 }
 
 const runTypes: RunType[] = [
@@ -27,9 +28,11 @@ const runTypes: RunType[] = [
     when: 'THIS SATURDAY',
     time: '7:30 AM',
     location: 'Gate A, Limuru Rd',
-    distances: '5 / 10 / 15 / 21 KM',
+    distances: '5 / 10 / 15 KM',
     badge: 'bg-white text-black',
     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560&auto=format&fit=crop',
+    // FIXED: Direct search link for Gate A
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Karura+Forest+Gate+A+Limuru+Road', 
   },
 
   {
@@ -39,9 +42,11 @@ const runTypes: RunType[] = [
     when: 'EVERY SATURDAY',
     time: '7:30 AM',
     location: 'Gen. Mathenge Dr',
-    distances: '10 / 15 / 20 / 25 KM',
+    distances: '6 / 10 / 15 KM',
     badge: 'bg-white text-black',
     image: '/baobox.webp',
+    // FIXED: Direct search link for Bao Box
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Bao+Box+General+Mathenge',
   },
   {
     id: 'beer-district',
@@ -50,20 +55,24 @@ const runTypes: RunType[] = [
     when: 'EVERY SATURDAY',
     time: '7:30 AM',
     location: 'Delta Towers, Westlands',
-    distances: '10 / 15 / 21 KM',
+    distances: '6 / 10 / 12 / 15 KM',
     badge: 'bg-white text-black',
     image: '/beer-district.png',
+    // FIXED: Direct search link for Beer District
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Beer+District+Delta+Towers',
   },
-    {
+  {
     id: 'tigoni',
     title: 'TIGONI HILLS',
     description: 'Scenic countryside run through tea farms.',
     when: 'NEXT SATURDAY',
     time: '7:30 AM',
     location: 'Tigoni Trails',
-    distances: '10 / 18 / 25 / 30+ KM',
+    distances: '8 / 10 / 18 KM',
     badge: 'bg-white text-black',
     image: '/tigoni.png',
+    // FIXED: General search link for Tigoni
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Tigoni+Tea+Farms',
   }
 ];
 
@@ -121,7 +130,7 @@ export function ScheduleSection() {
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 
-                {/* Bottom Gradient (Fades into card body) */}
+                {/* Bottom Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/40 to-transparent z-10" />
               </div>
 
@@ -146,10 +155,13 @@ export function ScheduleSection() {
                    </div>
                 </div>
                 
-                <Button variant="ghost" className="group/btn p-0 h-auto text-foreground hover:text-white font-display font-bold tracking-wider uppercase text-xs">
-                  View Details
-                  <ChevronRight size={16} className="ml-1 group-hover/btn:translate-x-1 transition-transform" />
-                </Button>
+                {/* BUTTON: Open Map in New Tab */}
+                <Link href={run.mapUrl} target="_blank" rel="noopener noreferrer">
+                    <Button variant="ghost" className="group/btn p-0 h-auto text-foreground hover:text-white font-display font-bold tracking-wider uppercase text-xs">
+                    Get Directions
+                    <ChevronRight size={16} className="ml-1 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                </Link>
               </div>
             </motion.div>
           ))}
