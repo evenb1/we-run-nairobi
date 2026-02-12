@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowDown, MapPin, Zap, Navigation } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
+import heroBg from "../../public/BARB.jpg";
 // CONFIGURATION
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY || "";
 const CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_ID || "";
@@ -107,11 +107,14 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/BARB.jpg"
+          src={heroBg}
           alt="Runners at dawn"
           fill
+          placeholder="blur"
           className="object-cover object-center"
+          quality={85}
           priority
+          
         />
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
