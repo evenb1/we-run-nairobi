@@ -8,9 +8,7 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { name: "The Run", href: "/#schedule" },    // Scrolls to "Find Your Run" section
-  { name: "Gallery", href: "/gallery" }, 
       { name: "Merchandise", href: "/merch" },     
-    // New Page
   { name: "Calendar", href: "/calendar" },   // New Page (Renamed from Shop)
   { name: "Contact", href: "#contact" },
 ];

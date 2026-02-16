@@ -51,9 +51,7 @@ export function PartnershipForm() {
                 Partner With <br /> The Culture
               </h2>
               <p className="text-neutral-400 text-lg leading-relaxed max-w-md">
-                We bridge the gap between lifestyle, fitness, and urban culture. 
-                Connect your brand with Nairobi’s most active and engaged community.
-              </p>
+                We bridge the gap between lifestyle, fitness, and urban culture.               </p>
             </motion.div>
 
             {/* Quick Stats for Brands */}
