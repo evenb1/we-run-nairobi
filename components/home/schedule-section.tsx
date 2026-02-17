@@ -2,12 +2,12 @@
 
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { Calendar, Clock, ChevronRight, ChevronLeft, Navigation, X, ExternalLink, Info } from 'lucide-react';
+import { Calendar, Clock, ChevronRight, ChevronLeft, Navigation, X, ExternalLink, Info, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { RUNS, RunType } from '@/lib/runs-data'; // IMPORTED HERE
+import { RUNS, RunType } from '@/lib/runs-data';
 
 export function ScheduleSection() {
   const ref = useRef(null);
@@ -41,15 +41,17 @@ export function ScheduleSection() {
   return (
     <section ref={ref} id="schedule" className="py-24 bg-background relative">
       <div className="container mx-auto px-4">
+        {/* Header */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} className="mb-16">
           <div className="flex items-center gap-3 mb-4">
             <Calendar className="text-foreground" size={24} />
             <span className="text-foreground font-medium tracking-widest uppercase text-sm">Weekly Schedule</span>
           </div>
           <h2 className="text-5xl md:text-7xl font-display font-bold text-foreground mb-4 uppercase">Find Your Run</h2>
-          <p className="text-muted-foreground text-lg max-w-xl font-body">From dawn patrols to trail adventures, there's a run for every mood and pace.</p>
+          <p className="text-muted-foreground text-lg max-w-xl font-body">From dawn patrols to trail adventures, there&apos;s a run for every mood and pace.</p>
         </motion.div>
 
+        {/* Grid */}
         <div className="grid md:grid-cols-2 gap-8">
           {RUNS.map((run, index) => (
             <motion.div
@@ -78,6 +80,27 @@ export function ScheduleSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* --- ADDED THIS HERE: THE MINIMAL CTA --- */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.5 }}
+          className="mt-20 text-center"
+        >
+          <Link 
+            href="https://www.instagram.com/werunnairobi" 
+            target="_blank"
+            className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors duration-300 group"
+          >
+            <Instagram size={14} className="group-hover:rotate-12 transition-transform" />
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em]">
+              More updates on Instagram
+            </span>
+            <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
+
       </div>
 
       <AnimatePresence>
