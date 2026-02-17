@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Oswald, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Navbar } from "@/components/layout/navbar"; // <--- Import this
+import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { LayoutWrapper } from "@/components/layout-wrapper";
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -28,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body
         className={cn(
           "min-h-screen bg-background font-body antialiased selection:bg-orange-500 selection:text-white",
@@ -36,9 +37,9 @@ export default function RootLayout({
           inter.variable
         )}
       >
-        <Navbar /> 
-        {children}
-        <Footer />
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
       </body>
     </html>
   );
