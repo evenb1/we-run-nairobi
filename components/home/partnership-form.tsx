@@ -87,7 +87,7 @@ export function PartnershipForm() {
                     <input 
                       type="text" 
                       name="brand"
-                      placeholder="Nike / Red Bull..." 
+                      placeholder="Nivea / Red Bull..." 
                       className="w-full bg-neutral-900 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-neutral-600"
                       onChange={handleChange}
                       required

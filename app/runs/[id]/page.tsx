@@ -10,7 +10,7 @@ import {
   Instagram
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import { CldImage } from 'next-cloudinary'; // Swapped engine
 import Link from 'next/link';
 import { RUNS } from '@/lib/runs-data';
 
@@ -20,7 +20,6 @@ export default function DynamicRunPage() {
   
   const run = RUNS.find(r => r.id === params.id);
 
-  // Safety: Force scroll to be enabled when this page loads
   useEffect(() => {
     document.body.style.overflow = 'auto';
     window.scrollTo(0, 0);
@@ -52,14 +51,12 @@ export default function DynamicRunPage() {
             <div className="hidden md:block text-[10px] font-mono uppercase tracking-[0.5em] text-white/40">
               {run.id} // we run nairobi
             </div>
-            <Link href="https://instagram.com/werunnairobi" target="_blank" className="bg-black/40 backdrop-blur-xl p-3 rounded-full border border-white/10 hover:scale-110 transition-transform">
-              <Instagram size={16} />
-            </Link>
+        
           </div>
         </div>
       </nav>
 
-      {/* ---  HERO --- */}
+      {/* --- HERO --- */}
       <section className="relative h-screen w-full overflow-hidden bg-neutral-900">
         <motion.div 
           initial={{ scale: 1.1 }} 
@@ -67,7 +64,8 @@ export default function DynamicRunPage() {
           transition={{ duration: 1.5 }}
           className="absolute inset-0"
         >
-          <Image 
+          {/* CldImage handles optimization & AVIF delivery */}
+          <CldImage 
             src={run.gallery[0]} 
             alt={run.title} 
             fill 
@@ -110,11 +108,10 @@ export default function DynamicRunPage() {
         </div>
       </section>
 
-      {/* --- IMAGE-LED MASONRY SECTION --- */}
+      {/* --- MASONRY SECTION --- */}
       <section className="py-24 px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 max-w-7xl mx-auto">
           
-          {/* Main Description */}
           <div className="md:col-span-5 mb-12 md:mb-0">
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-4">
               <span className="w-8 h-[1px] bg-white/20" /> The Environment
@@ -136,37 +133,32 @@ export default function DynamicRunPage() {
             </div>
           </div>
 
-          {/* Masonry Gallery */}
           <div className="md:col-span-7 grid grid-cols-2 gap-4 md:gap-6">
-            <div className="relative h-[400px] md:h-[600px] rounded-sm overflow-hidden group">
-               <Image src={run.gallery[1] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div className="relative h-[400px] md:h-[600px] rounded-sm overflow-hidden group bg-neutral-900">
+               <CldImage src={run.gallery[1] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
             </div>
             <div className="space-y-4 md:space-y-6">
-               <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group">
-                  <Image src={run.gallery[2] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+               <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group bg-neutral-900">
+                  <CldImage src={run.gallery[2] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                </div>
-               <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group">
-                  <Image src={run.gallery[3] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+               <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group bg-neutral-900">
+                  <CldImage src={run.gallery[3] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                </div>
             </div>
-            <div className="col-span-2 relative h-[300px] md:h-[450px] rounded-sm overflow-hidden group">
-               <Image src={run.gallery[4] || run.image} alt="Wide" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-               <div className="absolute bottom-6 left-6 flex items-center gap-2 bg-black/60 backdrop-blur-md p-3 border border-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Maximize2 size={16} />
-                  <span className="text-[10px] font-mono uppercase pr-2 tracking-widest">Expand</span>
-               </div>
+            <div className="col-span-2 relative h-[300px] md:h-[450px] rounded-sm overflow-hidden group bg-neutral-900">
+               <CldImage src={run.gallery[4] || run.image} alt="Wide" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+               
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- MAP SECTION --- */}
+      {/* --- MAP SECTION (No Cloudinary here as it's an iframe) --- */}
       <section className="py-24 px-6 md:px-12 bg-neutral-950 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div className="space-y-2">
               <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">Location</h2>
-              <p className="text-3xl md:text-4xl font-display font-bold uppercase tracking-tighter">{run.meetingPoint}</p>
             </div>
             <Link href={run.mapUrl} target="_blank">
               <Button variant="outline" className="border-white/10 hover:bg-white hover:text-black font-mono text-[10px] uppercase tracking-widest px-8 py-7 rounded-none">
@@ -174,7 +166,7 @@ export default function DynamicRunPage() {
               </Button>
             </Link>
           </div>
-          <div className="w-full h-[400px] md:h-[600px] rounded-sm overflow-hidden border border-white/5 shadow-2xl grayscale contrast-125">
+          <div className="w-full h-[400px] md:h-[600px] rounded-sm overflow-hidden border border-white/5 shadow-2xl  contrast-125">
             <iframe 
               src={run.mapEmbed} 
               width="100%" 
@@ -189,7 +181,6 @@ export default function DynamicRunPage() {
         </div>
       </section>
 
-      {/* --- MINIMAL FOOTER --- */}
       <footer className="py-24 bg-black text-center">
         <div className="max-w-2xl mx-auto px-6 space-y-8">
           <p className="text-[10px] font-mono text-white/20 uppercase tracking-[0.5em] leading-loose">

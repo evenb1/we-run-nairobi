@@ -2,96 +2,12 @@
 
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, ChevronRight, ChevronLeft, Navigation, X, ExternalLink, Instagram, Info } from 'lucide-react';
+import { Calendar, Clock, ChevronRight, ChevronLeft, Navigation, X, ExternalLink, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-// --- DATA STRUCTURE ---
-interface RunType {
-    id: string;
-    title: string;
-    description: string;
-    longDescription: string;
-    when: string;
-    time: string;
-    location: string;
-    distances: string;
-    image: string;     
-    gallery: string[]; 
-    mapUrl: string;    
-    mapEmbed: string;  
-}
-
-const runTypes: RunType[] = [
-  {
-    id: 'karura',
-    title: 'KARURA FOREST',
-    description: 'Trail running through nature. Meet at the field next to tennis courts.',
-    longDescription: 'Experience the lungs of Nairobi. Our Karura runs take you through shaded canopy trails, waterfalls, and caves. Perfect for those looking to escape the tarmac.',
-    when: 'THIS SATURDAY',
-    time: '7:30 AM',
-    location: 'Gate A, Limuru Rd',
-    distances: '5 / 10 / 15 KM',
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560&auto=format&fit=crop',
-    gallery: [
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200',
-        'https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=1200',
-        'https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200',
-    ],
-    mapUrl: 'https://goo.gl/maps/example1',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.56461413665!2d36.820!3d-1.238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1700!2sKarura%20Forest!5e0!3m2!1sen!2ske!4v1700000000000', 
-  },
-  {
-    id: 'bao-box',
-    title: 'BAO BOX RUN',
-    description: 'Urban run along General Mathenge ending with good vibes and food.',
-    longDescription: 'A high-energy urban route through Westlands. We start and finish at Bao Box, where runners enjoy post-run discounts on breakfast and coffee.',
-    when: 'EVERY SATURDAY',
-    time: '7:30 AM',
-    location: 'Gen. Mathenge Dr',
-    distances: '6 / 10 / 15 KM',
-    image: '/baobox.webp',
-    gallery: [
-        '/baobox.webp',
-        'https://images.unsplash.com/photo-1571358655738-c182dc8c996d?q=80&w=1200',
-    ],
-    mapUrl: 'https://goo.gl/maps/example2',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.850!2d36.800!3d-1.258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1700!2sBaoBox!5e0!3m2!1sen!2ske!4v1700000000000',
-  },
-  {
-    id: 'beer-district',
-    title: 'BEER DISTRICT',
-    description: 'Saturday run + dawn sessions at Delta Towers.',
-    longDescription: 'Push your limits on the hilly terrain of Westlands and Riverside, then recover with the community at Beer District. The ultimate social run.',
-    when: 'EVERY SATURDAY',
-    time: '7:30 AM',
-    location: 'Delta Towers, Westlands',
-    distances: '6 / 10 / 12 / 15 KM',
-    image: '/BD/3.jpg',
-    gallery: ['/BD/2.jpg', '/BD/4.jpg', '/BD/5.jpg'],
-    mapUrl: 'https://goo.gl/maps/example3',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.847!2d36.807!3d-1.264!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1737!2sBeer%20District!5e0!3m2!1sen!2ske!4v1700000000000',
-  },
-  {
-    id: 'kofisi',
-    title: 'KOFISI',
-    description: 'Scenic riverside run starting from Riverside Square.',
-    longDescription: 'Our flattest and fastest route. Perfect for tempo runs or beginners looking for a smooth riverside path with minimal traffic.',
-    when: 'NEXT SATURDAY',
-    time: '7:30 AM',
-    location: 'KOFISI, Riverside Dr',
-    distances: '6 / 8 / 10 / 12 / 14 KM',
-    image: '/kofisi/1.jpg',
-    gallery: [
-        'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200',
-        'https://images.unsplash.com/photo-1533560904424-a0c617f9a86d?q=80&w=1200',
-    ],
-    mapUrl: 'https://goo.gl/maps/example4',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.841!2d36.799!3d-1.272!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1741!2sKofisi%20Riverside!5e0!3m2!1sen!2ske!4v1700000000000', 
-  }
-];
+import { RUNS, RunType } from '@/lib/runs-data'; // IMPORTED HERE
 
 export function ScheduleSection() {
   const ref = useRef(null);
@@ -102,17 +18,13 @@ export function ScheduleSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-  if (selectedRun) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = 'unset';
-  }
-
-  // CLEANUP: This runs when the component unmounts (navigating to a new page)
-  return () => {
-    document.body.style.overflow = 'unset';
-  };
-}, [selectedRun]);
+    if (selectedRun) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [selectedRun]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -129,24 +41,17 @@ export function ScheduleSection() {
   return (
     <section ref={ref} id="schedule" className="py-24 bg-background relative">
       <div className="container mx-auto px-4">
-        
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          className="mb-16"
-        >
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} className="mb-16">
           <div className="flex items-center gap-3 mb-4">
             <Calendar className="text-foreground" size={24} />
             <span className="text-foreground font-medium tracking-widest uppercase text-sm">Weekly Schedule</span>
           </div>
           <h2 className="text-5xl md:text-7xl font-display font-bold text-foreground mb-4 uppercase">Find Your Run</h2>
-          <p className="text-muted-foreground text-lg max-w-xl font-body">From dawn patrols to trail adventures, there&apos;s a run for every mood and pace.</p>
+          <p className="text-muted-foreground text-lg max-w-xl font-body">From dawn patrols to trail adventures, there's a run for every mood and pace.</p>
         </motion.div>
 
-        {/* Grid */}
         <div className="grid md:grid-cols-2 gap-8">
-          {runTypes.map((run, index) => (
+          {RUNS.map((run, index) => (
             <motion.div
               key={run.id}
               initial={{ opacity: 0, y: 30 }}
@@ -155,11 +60,10 @@ export function ScheduleSection() {
               className="group relative overflow-hidden bg-card rounded-lg border border-white/10 hover:border-white/30 cursor-pointer transition-all"
               onClick={() => setSelectedRun(run)}
             >
-              <div className="relative h-72 w-full overflow-hidden">
-                <Image src={run.image} alt={run.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="relative h-72 w-full overflow-hidden bg-neutral-900">
+                <CldImage src={run.image} alt={run.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/20 to-transparent z-10" />
               </div>
-
               <div className="p-8 relative z-20">
                 <h3 className="text-3xl font-display font-bold mb-2 uppercase">{run.title}</h3>
                 <p className="text-muted-foreground mb-6 font-body text-sm line-clamp-2">{run.description}</p>
@@ -176,7 +80,6 @@ export function ScheduleSection() {
         </div>
       </div>
 
-      {/* --- MODAL (QUICK VIEW) --- */}
       <AnimatePresence>
         {selectedRun && (
           <motion.div
@@ -189,33 +92,27 @@ export function ScheduleSection() {
               onClick={(e) => e.stopPropagation()}
               className="bg-[#111] w-full max-w-5xl md:rounded-2xl shadow-2xl overflow-hidden relative flex flex-col my-auto"
             >
-              {/* Close */}
               <button onClick={() => setSelectedRun(null)} className="absolute top-4 right-4 z-50 p-3 bg-black/60 rounded-full border border-white/10 text-white">
                 <X size={20} />
               </button>
 
-              {/* Hero Carousel */}
-              <div className="relative h-64 md:h-[400px] shrink-0 overflow-hidden">
+              <div className="relative h-64 md:h-[400px] shrink-0 overflow-hidden bg-neutral-900">
                 <AnimatePresence mode='wait'>
                   <motion.div key={currentImageIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0">
-                    <Image src={selectedRun.gallery[currentImageIndex]} alt={selectedRun.title} fill className="object-cover" />
+                    <CldImage src={selectedRun.gallery[currentImageIndex]} alt={selectedRun.title} fill className="object-cover" priority />
                   </motion.div>
                 </AnimatePresence>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
-                
-                {/* Nav Arrows */}
                 <div className="absolute inset-0 flex items-center justify-between px-4">
                   <button onClick={prevImage} className="p-2 bg-black/40 hover:bg-white/20 rounded-full text-white"><ChevronLeft /></button>
                   <button onClick={nextImage} className="p-2 bg-black/40 hover:bg-white/20 rounded-full text-white"><ChevronRight /></button>
                 </div>
               </div>
 
-              {/* Content Grid */}
               <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-white/10">
                 <div className="p-6 md:p-10 flex-1">
                   <h3 className="text-4xl font-display font-bold text-white uppercase mb-4">{selectedRun.title}</h3>
                   <p className="text-white/60 mb-8 font-body leading-relaxed">{selectedRun.longDescription}</p>
-                  
                   <div className="grid grid-cols-2 gap-4 mb-8">
                     <div className="space-y-1">
                         <span className="text-[10px] text-white/40 uppercase tracking-tighter font-mono">Paces/Distance</span>
@@ -226,12 +123,8 @@ export function ScheduleSection() {
                         <p className="text-white font-bold">{selectedRun.time}</p>
                     </div>
                   </div>
-
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Button 
-                        onClick={() => router.push(`/runs/${selectedRun.id}`)}
-                        className="flex-1 bg-white text-black hover:bg-neutral-200 uppercase font-bold tracking-widest py-6"
-                    >
+                    <Button onClick={() => router.push(`/runs/${selectedRun.id}`)} className="flex-1 bg-white text-black hover:bg-neutral-200 uppercase font-bold tracking-widest py-6">
                         Full Details <Info className="ml-2 w-4 h-4" />
                     </Button>
                     <Link href={selectedRun.mapUrl} target="_blank" className="flex-1">
@@ -241,13 +134,8 @@ export function ScheduleSection() {
                     </Link>
                   </div>
                 </div>
-
-                {/* Map Sidebar */}
                 <div className="w-full md:w-[40%] h-[300px] md:h-auto bg-neutral-900 overflow-hidden relative">
-                    <iframe src={selectedRun.mapEmbed} width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" className="grayscale contrast-125 opacity-70 hover:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-4 left-4">
-                        <span className="bg-black/80 px-3 py-1 text-[10px] text-white font-mono uppercase rounded-full border border-white/10">Meeting Point: {selectedRun.location}</span>
-                    </div>
+                    <iframe src={selectedRun.mapEmbed} width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" className=" contrast-125 opacity-70 hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             </motion.div>

@@ -37,16 +37,14 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '80m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Dirt/Hardpack', icon: MapPin },
     ],
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560',
+    // If Karura is still Unsplash, keep it. If you uploaded it, use 'we-run-nairobi/karura'
+    image: 'we-run-nairobi/karura/karura',
     gallery: [
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200',
-        'https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=1200',
-        'https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200',
-        'https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1200',
-        'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1200',
+        'we-run-nairobi/karura/karura',
+        'we-run-nairobi/karura-2',
     ],
-    mapUrl: 'https://goo.gl/maps/karura',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=...' 
+    mapUrl: 'https://maps.app.goo.gl/BFyQADiYyWiwbV9T6',
+    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8730088627435!2d36.81462977577999!3d-1.2472603355863843!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f170000b39e3b%3A0x5c64ec570397e766!2sKarura%20Forest%20Gate%20A!5e0!3m2!1sen!2ske!4v1771344794588!5m2!1sen!2ske' 
   },
   {
     id: 'bao-box',
@@ -62,10 +60,10 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '45m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Tarmac', icon: MapPin },
     ],
-    image: '/baobox.webp',
-    gallery: ['/baobox.webp', '/BD/2.jpg', '/BD/3.jpg', '/BD/4.jpg', '/BD/5.jpg'],
-    mapUrl: 'https://goo.gl/maps/baobox',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=...'
+    image: 'we-run-nairobi/baobox',
+    gallery: ['we-run-nairobi/baobox', 'we-run-nairobi/BD/2', 'we-run-nairobi/BD/3', 'we-run-nairobi/BD/4', 'we-run-nairobi/BD/5'],
+    mapUrl: 'https://maps.app.goo.gl/EzzDXYSEmSCXsoGHA',
+    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.86831692985!2d36.787195375779895!3d-1.2503519355895827!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f173a1357bc9b%3A0x6b8743e1274c418e!2sBao%20Box!5e0!3m2!1sen!2ske!4v1771344941562!5m2!1sen!2ske'
   },
   {
     id: 'beer-district',
@@ -81,10 +79,10 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '150m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Tarmac/Hills', icon: MapPin },
     ],
-    image: '/BD/3.jpg',
-    gallery: ['/BD/3.jpg', '/BD/2.jpg', '/BD/4.jpg', '/BD/5.jpg', '/kofisi/1.jpg'],
-    mapUrl: 'https://goo.gl/maps/beer-district',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=...'
+    image: 'we-run-nairobi/BD/3',
+    gallery: ['we-run-nairobi/BD/3', 'we-run-nairobi/BD/2', 'we-run-nairobi/BD/4', 'we-run-nairobi/BD/5', 'WERUN_X_BARBADOS-194_tdq6mh'],
+    mapUrl: 'https://maps.app.goo.gl/Uh55EV9DnrtmXQj79',
+    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8438435826797!2d36.79939537577996!3d-1.2663555356063454!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f17c9e6423597%3A0xf14948a5f019daa7!2s254%20Beer%20District!5e0!3m2!1sen!2ske!4v1771344988626!5m2!1sen!2ske'
   },
   {
     id: 'kofisi',
@@ -100,9 +98,9 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '120m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Tarmac/Trail', icon: MapPin },
     ],
-    image: '/kofisi/1.jpg',
-    gallery: ['/kofisi/1.jpg', '/BD/2.jpg', '/BD/3.jpg', '/BD/4.jpg', '/BD/5.jpg'],
-    mapUrl: 'https://goo.gl/maps/kofisi',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=...'
+    image: 'we-run-nairobi/kofisi/1',
+    gallery: ['we-run-nairobi/kofisi/1', 'we-run-nairobi/kofisi/7', 'we-run-nairobi/kofisi/4', 'we-run-nairobi/kofisi/5', 'we-run-nairobi/kofisi/6'],
+    mapUrl: 'https://maps.app.goo.gl/5P1JrCnA2LF1CRPv7',
+    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8396046809994!2d36.78698737578023!3d-1.2691069356092692!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1714b5483c07%3A0x535f2b92a9c0cb03!2sKOFISI%20Square!5e0!3m2!1sen!2ske!4v1771344887962!5m2!1sen!2ske'
   }
 ];

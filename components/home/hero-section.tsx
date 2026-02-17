@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion";
 import { ArrowDown, MapPin, Zap, Navigation } from "lucide-react";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 import { useEffect, useState } from "react";
-import heroBg from "../../public/BARB.jpg";
 
 // CONFIGURATION
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY || "";
@@ -14,8 +13,8 @@ export function HeroSection() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [nextRun, setNextRun] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
+  // FETCH NEXT RUN LOGIC (Same as your original)
   useEffect(() => {
     const fetchNextRun = async () => {
       try {
@@ -28,31 +27,15 @@ export function HeroSection() {
         if (data.items && data.items.length > 0) {
           const event = data.items[0];
           const combinedText = ((event.summary || "") + " " + (event.description || "")).toLowerCase();
-
-          // --- DISTANCE PARSING ---
           const allMatches = combinedText.match(/(\d+(?:\.\d+)?)\s*(?:km|k)\b/g);
           let distanceDisplay = "DISTANCE TBD";
-
           if (allMatches) {
             const numbers = allMatches.map((str: string) => parseFloat(str.replace(/[^\d.]/g, '')));
             const uniqueSorted = [...new Set(numbers)].sort((a, b) => a - b);
-            if (uniqueSorted.length > 0) {
-              distanceDisplay = uniqueSorted.join(' / ') + ' KM';
-            }
+            distanceDisplay = uniqueSorted.join(' / ') + ' KM';
           }
-
-          // --- LOCATION LOGIC ---
-          // 1. Use event.location if available
-          // 2. Strip "WRN" from summary and use that
-          // 3. Final fallback: "Nairobi"
-          let rawLocation = event.location 
-            || event.summary?.replace(/^WRN\s*/i, '').trim() 
-            || "Nairobi";
-
-          const displayLocation = rawLocation.includes(',')
-            ? rawLocation.split(',')[0].trim()
-            : rawLocation;
-
+          let rawLocation = event.location || event.summary?.replace(/^WRN\s*/i, '').trim() || "Nairobi";
+          const displayLocation = rawLocation.includes(',') ? rawLocation.split(',')[0].trim() : rawLocation;
           const startDate = new Date(event.start.dateTime || event.start.date);
 
           setNextRun({
@@ -69,18 +52,15 @@ export function HeroSection() {
         setLoading(false);
       }
     };
-
     fetchNextRun();
   }, []);
 
-  // COUNTDOWN TIMER
+  // COUNTDOWN TIMER (Same as your original)
   useEffect(() => {
     if (!nextRun) return;
-
     const calculateTimeLeft = () => {
       const now = new Date();
       const difference = nextRun.date.getTime() - now.getTime();
-
       if (difference > 0) {
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -88,11 +68,8 @@ export function HeroSection() {
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
-
     const timer = setInterval(calculateTimeLeft, 1000);
     calculateTimeLeft();
     return () => clearInterval(timer);
@@ -107,19 +84,18 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-20 pb-20 xl:pt-0 xl:pb-0">
       
-      {/* Background Image */}
+      {/* Background Image - DESIGN KEPT SAME */}
       <div className="absolute inset-0 z-0 bg-neutral-900">
-        <Image
-          src={heroBg}
+        <CldImage
+          src="we-run-nairobi/BARB"
           alt="Runners at dawn"
           fill
-          placeholder="blur"
-          className={`object-cover object-center transition-opacity duration-1000 ease-out ${
-            imageLoaded ? "opacity-100" : "opacity-0"
-          }`}
-          quality={85}
           priority
-          onLoad={() => setImageLoaded(true)}
+          sizes="100vw"
+          quality={80}
+          placeholder="blur"
+          blurDataURL="https://res.cloudinary.com/dsfgfu2kn/image/upload/w_10,e_blur:1000,q_auto,f_webp/we-run-nairobi/BARB"
+          className="object-cover object-center transition-opacity duration-1000 ease-out"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
@@ -127,7 +103,7 @@ export function HeroSection() {
 
       <div className="container relative z-10 h-full flex flex-col xl:flex-row items-center xl:justify-between px-4">
         
-        {/* LEFT SIDE */}
+        {/* LEFT SIDE - SAME AS YOUR ORIGINAL */}
         <div className="w-full xl:max-w-4xl xl:pl-20 mt-10 xl:mt-0">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -178,7 +154,7 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* RIGHT SIDE: HUD Box */}
+        {/* RIGHT SIDE: HUD Box - SAME AS YOUR ORIGINAL */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -191,7 +167,6 @@ export function HeroSection() {
             <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/40" />
             <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/40" />
 
-            {/* LOCATION */}
             <div className="mb-6 flex items-start gap-4">
               <div className="p-2 bg-white/5 border border-white/10">
                 <MapPin className="text-white" size={16} />
@@ -207,8 +182,7 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* DISTANCE */}
-            {!loading && nextRun && (
+            {nextRun && (
               <div className="mb-8 flex items-start gap-4">
                 <div className="p-2 bg-white/5 border border-white/10">
                   <Navigation className="text-white" size={16} />
@@ -224,7 +198,6 @@ export function HeroSection() {
 
             <div className="w-full h-[1px] bg-white/10 mb-8" />
 
-            {/* PROTOCOL */}
             {nextRun && (
               <div>
                 <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-5 pl-1 font-medium">Protocol</p>

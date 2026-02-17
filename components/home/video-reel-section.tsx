@@ -3,67 +3,59 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 
-const videos = [
-  "/videos/clip8.mp4",
-  "/videos/clip3.mp4",
-  "/videos/clip11.mp4",  
-  "/videos/clip14.mp4",
-  "/videos/clip17.mp4",
-  "/videos/clip9.mp4",
-  "/videos/clip2.mp4",
-  "/videos/clip12.mp4",
-  "/videos/clip5.mp4",
-  "/videos/clip7.mp4",
-  "/videos/clip15.mp4",
-  "/videos/clip13.mp4",
-  "/videos/clip19.mp4",
+const videoIds = [
+  "clip8_qdkm4t",
+  "clip3_ieywge",
+  "clip11_zbj9rk",  
+  "clip14_niati1",
+  "clip17_mcym4c",
+  "clip9_edovn9",
+  "clip2_v4gqdz",
+  "clip12_uyit0d",
+  "clip5_qcfux5",
+  "clip7_uvxs91",
+  "clip15_vutzu6",
+  "clip13_ws1hd0",
+  "clip19_fyyknd",
 ];
+
+const CLOUD_NAME = "dsfgfu2kn";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    }
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
   }
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 50, scale: 0.9 },
   visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
+    opacity: 1, y: 0, scale: 1,
     transition: { type: "spring", stiffness: 100, damping: 20 }
   }
 };
 
 export function VideoReelSection() {
-  // 1. We need a State to hold the negative drag limit
   const [width, setWidth] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  // 2. Calculate the draggable width once the component mounts
-  useEffect(() => {
-    if (containerRef.current) {
-      // Formula: Total Scrollable Width - Visible Window Width
-      // We subtract an extra cushion (e.g., 40px) to ensure the last item isn't cut off
-      setWidth(containerRef.current.scrollWidth - containerRef.current.offsetWidth);
-    }
-    
-    // Optional: Recalculate on resize
-    const handleResize = () => {
-        if (containerRef.current) {
-            setWidth(containerRef.current.scrollWidth - containerRef.current.offsetWidth);
-        }
-    }
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (scrollRef.current) {
+        setWidth(scrollRef.current.scrollWidth - scrollRef.current.offsetWidth);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
   return (
     <section className="py-24 bg-neutral-950 overflow-hidden">
       <div className="container mx-auto px-4 mb-10">
@@ -83,18 +75,22 @@ export function VideoReelSection() {
             transition={{ delay: 0.3 }}
             className="text-neutral-500 text-sm md:text-base font-mono"
          >
-            &larr; Drag to explore &rarr;
+            {isMobile ? "← Drag to explore →" : "Scroll to explore →"}
          </motion.p>
       </div>
 
-      {/* 3. Attach the Ref here. 
-        Because the child is wide, this div technically has a massive 'scrollWidth'.
+      {/* Main Wrapper: 
+          On PC: Uses native overflow-x-auto for mouse scrolling.
+          On Mobile: Overflow hidden so Framer Motion can handle the drag.
       */}
-      <div ref={containerRef} className="pl-4 md:pl-[max(1rem,calc((100vw-1280px)/2))] w-full"> 
+      <div 
+        ref={scrollRef} 
+        className={`w-full ${!isMobile ? 'overflow-x-auto no-scrollbar cursor-default' : 'overflow-hidden'}`}
+      >
         <motion.div 
-          className="flex gap-6 cursor-grab active:cursor-grabbing"
-          drag="x"
-          // 4. Use the calculated width for the left constraint
+          className={`flex gap-6 pl-4 md:pl-[max(1rem,calc((100vw-1280px)/2))] pr-10 ${isMobile ? 'cursor-grab active:cursor-grabbing w-max' : 'w-max pb-6'}`}
+          // Only enable drag if we are on mobile
+          drag={isMobile ? "x" : false}
           dragConstraints={{ right: 0, left: -width }} 
           dragElastic={0.1} 
           variants={containerVariants}
@@ -102,28 +98,36 @@ export function VideoReelSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          {videos.map((src, index) => (
+          {videoIds.map((id, index) => (
             <motion.div 
               key={index}
               variants={itemVariants}
-              whileHover={{ scale: 1.05, zIndex: 10, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               className="relative flex-shrink-0 w-[300px] h-[533px] md:w-[400px] md:h-[711px] rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 shadow-2xl"
             >
               <video
-                src={src}
-                className="w-full h-full object-cover pointer-events-none"
+src={`https://res.cloudinary.com/${CLOUD_NAME}/video/upload/q_auto,f_auto/v1/${id}`}                className="w-full h-full object-cover pointer-events-none"
                 autoPlay
                 muted
                 loop
                 playsInline
-                preload="none"
+                preload="metadata"
               />
               <div className="absolute inset-0 bg-black/20 hover:bg-transparent transition-colors duration-300" />
             </motion.div>
           ))}
         </motion.div>
       </div>
+
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </section>
   );
 }

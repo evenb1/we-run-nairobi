@@ -5,130 +5,86 @@ const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
 const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
 const STRAVA_REFRESH_TOKEN = process.env.STRAVA_REFRESH_TOKEN;
 
-// Add logging
-console.log('ENV CHECK:', {
-  hasClientId: !!STRAVA_CLIENT_ID,
-  hasClientSecret: !!STRAVA_CLIENT_SECRET,
-  hasRefreshToken: !!STRAVA_REFRESH_TOKEN,
-  clubId: STRAVA_CLUB_ID,
-});
-
 async function getAccessToken() {
-  try {
-    console.log('Getting access token...');
-    
-    const response = await fetch('https://www.strava.com/oauth/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: STRAVA_CLIENT_ID!,
-        client_secret: STRAVA_CLIENT_SECRET!,
-        refresh_token: STRAVA_REFRESH_TOKEN!,
-        grant_type: 'refresh_token',
-      }),
-    });
+  const response = await fetch('https://www.strava.com/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: STRAVA_CLIENT_ID!,
+      client_secret: STRAVA_CLIENT_SECRET!,
+      refresh_token: STRAVA_REFRESH_TOKEN!,
+      grant_type: 'refresh_token',
+    }),
+  });
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      console.error('Token refresh failed:', data);
-      throw new Error(data.message || 'Failed to refresh token');
-    }
-    
-    console.log('Access token obtained successfully');
-    return data.access_token;
-  } catch (error) {
-    console.error('Error getting access token:', error);
-    throw error;
-  }
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to refresh token');
+  return data.access_token;
 }
 
 export async function GET() {
   try {
-    console.log('Strava API route called');
-    
-    // Get fresh access token
     const accessToken = await getAccessToken();
 
-    console.log('Fetching club data...');
-    
     // Fetch club details
     const clubResponse = await fetch(
       `https://www.strava.com/api/v3/clubs/${STRAVA_CLUB_ID}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${accessToken}` } }
     );
-
-    if (!clubResponse.ok) {
-      const errorData = await clubResponse.json();
-      console.error('Club fetch failed:', errorData);
-      throw new Error(`Failed to fetch club data: ${clubResponse.status}`);
-    }
-
+    if (!clubResponse.ok) throw new Error(`Club fetch failed: ${clubResponse.status}`);
     const clubData = await clubResponse.json();
-    console.log('Club data fetched:', clubData.name);
 
-    console.log('Fetching activities...');
-    
-    // Fetch recent club activities
+    // Fetch club activities - NOTE: this endpoint only returns basic athlete info
+    // (firstname, lastname only - no profile photo, no created_at)
     const activitiesResponse = await fetch(
       `https://www.strava.com/api/v3/clubs/${STRAVA_CLUB_ID}/activities?per_page=30`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${accessToken}` } }
     );
-
-    if (!activitiesResponse.ok) {
-      const errorData = await activitiesResponse.json();
-      console.error('Activities fetch failed:', errorData);
-      throw new Error(`Failed to fetch activities: ${activitiesResponse.status}`);
-    }
-
+    if (!activitiesResponse.ok) throw new Error(`Activities fetch failed: ${activitiesResponse.status}`);
     const activities = await activitiesResponse.json();
-    console.log('Activities fetched:', activities.length);
 
-    // Process activities for leaderboard (this week's data)
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    // Generate a consistent avatar from name (uses pravatar with name as seed)
+    const getAvatar = (firstname: string, lastname: string) =>
+      `https://i.pravatar.cc/150?u=${firstname}${lastname}`;
 
-    const thisWeekActivities = activities.filter((activity: any) => {
-      const activityDate = new Date(activity.athlete.created_at);
-      return activityDate >= oneWeekAgo;
+    // Recent activities - only use fields that actually exist
+    const recentActivities = activities.slice(0, 6).map((activity: any) => {
+      const distanceKm = (activity.distance / 1000).toFixed(1);
+      const totalSeconds = activity.moving_time;
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+      // Pace in min/km
+      const paceSeconds = totalSeconds / (activity.distance / 1000);
+      const paceMin = Math.floor(paceSeconds / 60);
+      const paceSec = Math.floor(paceSeconds % 60);
+
+      return {
+        name: `${activity.athlete.firstname} ${activity.athlete.lastname}`,
+        distance: distanceKm,
+        time: hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`,
+        pace: `${paceMin}'${paceSec.toString().padStart(2, '0')}"`,
+        avatar: getAvatar(activity.athlete.firstname, activity.athlete.lastname),
+        activityName: activity.name,
+      };
     });
 
-    // Calculate total distance this week
-    const totalDistanceThisWeek = thisWeekActivities.reduce(
-      (sum: number, activity: any) => sum + (activity.distance || 0),
-      0
-    );
-
-    // Group by athlete for leaderboard
-    const athleteStats = activities.reduce((acc: any, activity: any) => {
-      const athleteId = activity.athlete.id;
-      
-      if (!acc[athleteId]) {
-        acc[athleteId] = {
+    // Leaderboard - group by athlete name (no ID available from this endpoint)
+    const athleteStats: Record<string, any> = {};
+    for (const activity of activities) {
+      const key = `${activity.athlete.firstname}_${activity.athlete.lastname}`;
+      if (!athleteStats[key]) {
+        athleteStats[key] = {
           name: `${activity.athlete.firstname} ${activity.athlete.lastname}`,
-          avatar: activity.athlete.profile || 'https://i.pravatar.cc/150',
+          avatar: getAvatar(activity.athlete.firstname, activity.athlete.lastname),
           totalKm: 0,
           runs: 0,
         };
       }
+      athleteStats[key].totalKm += (activity.distance || 0) / 1000;
+      athleteStats[key].runs += 1;
+    }
 
-      acc[athleteId].totalKm += (activity.distance || 0) / 1000;
-      acc[athleteId].runs += 1;
-
-      return acc;
-    }, {});
-
-    // Convert to array and sort by distance
     const leaderboard = Object.values(athleteStats)
       .sort((a: any, b: any) => b.totalKm - a.totalKm)
       .slice(0, 5)
@@ -140,74 +96,56 @@ export async function GET() {
         avatar: athlete.avatar,
       }));
 
-    // Recent activities with proper formatting
-    const recentActivities = activities.slice(0, 6).map((activity: any) => {
-      const distanceKm = (activity.distance / 1000).toFixed(1);
-      const movingTimeMinutes = Math.floor(activity.moving_time / 60);
-      const hours = Math.floor(movingTimeMinutes / 60);
-      const minutes = movingTimeMinutes % 60;
-      
-      // Calculate pace (min/km)
-      const paceSeconds = activity.moving_time / (activity.distance / 1000);
-      const paceMinutes = Math.floor(paceSeconds / 60);
-      const paceSecondsRemainder = Math.floor(paceSeconds % 60);
-      
-      return {
-        name: `${activity.athlete.firstname} ${activity.athlete.lastname?.charAt(0)}.`,
-        distance: distanceKm,
-        time: hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`,
-        pace: `${paceMinutes}'${paceSecondsRemainder.toString().padStart(2, '0')}"`,
-        avatar: activity.athlete.profile || `https://i.pravatar.cc/150?u=${activity.athlete.id}`,
-      };
-    });
+    // Total distance across all fetched activities
+    const totalDistance = activities.reduce(
+      (sum: number, a: any) => sum + (a.distance || 0), 0
+    );
 
-    // Find featured runner (longest run this week)
-    const featuredActivity = thisWeekActivities.sort((a: any, b: any) => 
-      b.distance - a.distance
+    // Featured runner - whoever has the longest single activity
+    const longestActivity = [...activities].sort(
+      (a: any, b: any) => b.distance - a.distance
     )[0];
 
     let featuredRunner = null;
-    if (featuredActivity) {
-      const distanceKm = (featuredActivity.distance / 1000).toFixed(1);
-      const movingTimeMinutes = Math.floor(featuredActivity.moving_time / 60);
-      const hours = Math.floor(movingTimeMinutes / 60);
-      const minutes = movingTimeMinutes % 60;
+    if (longestActivity) {
+      const distanceKm = (longestActivity.distance / 1000).toFixed(1);
+      const totalSecs = longestActivity.moving_time;
+      const hours = Math.floor(totalSecs / 3600);
+      const minutes = Math.floor((totalSecs % 3600) / 60);
 
       featuredRunner = {
-        name: `${featuredActivity.athlete.firstname} ${featuredActivity.athlete.lastname}`,
-        avatar: featuredActivity.athlete.profile || `https://i.pravatar.cc/150?u=${featuredActivity.athlete.id}`,
+        name: `${longestActivity.athlete.firstname} ${longestActivity.athlete.lastname}`,
+        avatar: getAvatar(longestActivity.athlete.firstname, longestActivity.athlete.lastname),
         distance: distanceKm,
         time: hours > 0 ? `${hours}:${minutes.toString().padStart(2, '0')}h` : `${minutes}m`,
-        route: featuredActivity.name || 'Morning Run',
-        location: 'Nairobi',
-        streak: Math.floor(Math.random() * 20) + 5,
+        route: longestActivity.name || 'Morning Run',
+        location: longestActivity.name || 'Nairobi',
+        streak: longestActivity.total_elevation_gain
+          ? `${Math.round(longestActivity.total_elevation_gain)}m elev`
+          : 'N/A',
       };
     }
 
-    const result = {
+    return NextResponse.json({
       club: {
         name: clubData.name,
         memberCount: clubData.member_count,
+        city: clubData.city,
+        country: clubData.country,
       },
       stats: {
-        totalDistanceThisWeek: (totalDistanceThisWeek / 1000).toFixed(0),
+        totalDistanceThisWeek: (totalDistance / 1000).toFixed(0),
+        activitiesCount: activities.length,
       },
       recentActivities,
       leaderboard,
       featuredRunner,
-    };
+    });
 
-    console.log('Successfully processed data');
-    return NextResponse.json(result);
-    
   } catch (error: any) {
     console.error('Strava API Error:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch Strava data',
-        message: error.message,
-        details: error.toString()
-      },
+      { error: 'Failed to fetch Strava data', message: error.message },
       { status: 500 }
     );
   }
