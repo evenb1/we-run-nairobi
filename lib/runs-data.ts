@@ -42,7 +42,7 @@ export const RUNS: RunType[] = [
     image: 'we-run-nairobi/karura/karura',
     gallery: [
         'we-run-nairobi/karura/karura',
-        'we-run-nairobi/karura-2',
+        // 'we-run-nairobi/karura-2',
     ],
     routeImage: 'karura_i1iiil',
     mapUrl: 'https://maps.app.goo.gl/BFyQADiYyWiwbV9T6',
