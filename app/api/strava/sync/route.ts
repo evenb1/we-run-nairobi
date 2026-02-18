@@ -27,15 +27,28 @@ async function getAccessToken() {
   return data.access_token;
 }
 
-function sanitizeName(name: string) {
+function getInitials(name: string) {
   return name
-    .replace(/[^\p{L}\p{N}\s.'-]/gu, '')  // keep only letters, numbers, spaces, and basic punctuation
-    .replace(/\s+/g, ' ')
-    .trim();
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 }
 
-function getAvatar(firstname: string, lastname: string) {
-  return `https://i.pravatar.cc/150?u=${firstname}${lastname}`;
+function getMondayTimestamp(): number {
+  const now = new Date();
+  const day = now.getUTCDay();
+  const diff = (day + 6) % 7;
+  const monday = new Date(now);
+  monday.setUTCDate(now.getUTCDate() - diff);
+  monday.setUTCHours(0, 0, 0, 0);
+  return monday.getTime();
+}
+
+function getActivityFingerprint(activity: any): string {
+  return `${activity.athlete.firstname}_${activity.athlete.lastname}_${activity.distance}_${activity.moving_time}`;
 }
 
 export async function GET(request: NextRequest) {
@@ -46,26 +59,102 @@ export async function GET(request: NextRequest) {
 
   try {
     const accessToken = await getAccessToken();
-    const allActivities: any[] = [];
-    let page = 1;
+    const currentMondayTs = getMondayTimestamp();
 
-    while (true) {
-      const res = await fetch(
-        `https://www.strava.com/api/v3/clubs/${STRAVA_CLUB_ID}/activities?per_page=200&page=${page}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
-      const batch = await res.json();
+    let accumulated: {
+      weekStart: number;
+      seen: string[];
+      athletes: Record<string, {
+        name: string;
+        initials: string;
+        totalKm: number;
+        runs: number;
+      }>;
+    } = {
+      weekStart: currentMondayTs,
+      seen: [],
+      athletes: {},
+    };
 
-      if (!Array.isArray(batch) || batch.length === 0) break;
-
-      allActivities.push(...batch);
-
-      if (batch.length < 200) break;
-      page++;
+    const stored = await redis.get('strava:accumulated');
+    if (stored) {
+      const parsed = typeof stored === 'string' ? JSON.parse(stored) : stored;
+      if (parsed.weekStart === currentMondayTs) {
+        accumulated = parsed;
+      } else {
+        console.log('New week detected — resetting accumulator');
+      }
     }
 
-    // --- Recent Activities (last 6) ---
-    const recentActivities = allActivities.slice(0, 6).map((activity: any) => {
+    const res = await fetch(
+      `https://www.strava.com/api/v3/clubs/${STRAVA_CLUB_ID}/activities?per_page=200&page=1`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    const activities = await res.json();
+
+    if (!Array.isArray(activities)) {
+      throw new Error('Unexpected response from Strava');
+    }
+
+    let newCount = 0;
+    for (const activity of activities) {
+      const fp = getActivityFingerprint(activity);
+      if (accumulated.seen.includes(fp)) continue;
+
+      accumulated.seen.push(fp);
+      newCount++;
+
+      const fullName = `${activity.athlete.firstname} ${activity.athlete.lastname}`;
+      const key = `${activity.athlete.firstname}_${activity.athlete.lastname}`;
+
+      if (!accumulated.athletes[key]) {
+        accumulated.athletes[key] = {
+          name: fullName,
+          initials: getInitials(fullName),
+          totalKm: 0,
+          runs: 0,
+        };
+      }
+      accumulated.athletes[key].totalKm += (activity.distance || 0) / 1000;
+      accumulated.athletes[key].runs += 1;
+    }
+
+    if (accumulated.seen.length > 2000) {
+      accumulated.seen = accumulated.seen.slice(-2000);
+    }
+
+    const secondsUntilNextMonday = Math.floor(
+      (currentMondayTs + 7 * 24 * 60 * 60 * 1000 - Date.now()) / 1000
+    ) + 3600;
+
+    await redis.set('strava:accumulated', JSON.stringify(accumulated), {
+      ex: secondsUntilNextMonday,
+    });
+
+    const sortedAthletes = Object.values(accumulated.athletes).sort(
+      (a, b) => b.totalKm - a.totalKm
+    );
+
+    const leaderboard = sortedAthletes.slice(0, 5).map((athlete, index) => ({
+      rank: index + 1,
+      name: athlete.name,
+      km: parseFloat(athlete.totalKm.toFixed(1)),
+      runs: athlete.runs,
+      initials: athlete.initials,
+    }));
+
+    const runnerOfWeek = sortedAthletes[0] || null;
+    const featuredRunner = runnerOfWeek
+      ? {
+          name: runnerOfWeek.name,
+          initials: runnerOfWeek.initials,
+          distance: runnerOfWeek.totalKm.toFixed(1),
+          time: `${runnerOfWeek.runs} run${runnerOfWeek.runs !== 1 ? 's' : ''}`,
+          location: 'Nairobi, Kenya',
+        }
+      : null;
+
+    const recentActivities = activities.slice(0, 6).map((activity: any) => {
       const distanceKm = (activity.distance / 1000).toFixed(1);
       const totalSeconds = activity.moving_time;
       const hours = Math.floor(totalSeconds / 3600);
@@ -73,70 +162,20 @@ export async function GET(request: NextRequest) {
       const paceSeconds = totalSeconds / (activity.distance / 1000);
       const paceMin = Math.floor(paceSeconds / 60);
       const paceSec = Math.floor(paceSeconds % 60);
-      const fullName = sanitizeName(
-        `${activity.athlete.firstname} ${activity.athlete.lastname}`
-      );
+      const fullName = `${activity.athlete.firstname} ${activity.athlete.lastname}`;
 
       return {
         name: fullName,
         distance: distanceKm,
         time: hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`,
         pace: `${paceMin}'${paceSec.toString().padStart(2, '0')}"`,
-        avatar: getAvatar(activity.athlete.firstname, activity.athlete.lastname),
+        initials: getInitials(fullName),
         activityName: activity.name,
       };
     });
 
-    // --- Athlete Stats for Leaderboard + Runner of the Week ---
-    const athleteStats: Record<string, any> = {};
-    for (const activity of allActivities) {
-      const fullName = sanitizeName(
-        `${activity.athlete.firstname} ${activity.athlete.lastname}`
-      );
-      const key = `${activity.athlete.firstname}_${activity.athlete.lastname}`;
-      if (!athleteStats[key]) {
-        athleteStats[key] = {
-          name: fullName,
-          avatar: getAvatar(activity.athlete.firstname, activity.athlete.lastname),
-          totalKm: 0,
-          runs: 0,
-        };
-      }
-      athleteStats[key].totalKm += (activity.distance || 0) / 1000;
-      athleteStats[key].runs += 1;
-    }
-
-    const sortedAthletes = Object.values(athleteStats).sort(
-      (a: any, b: any) => b.totalKm - a.totalKm
-    );
-
-    // --- Leaderboard (top 5) ---
-    const leaderboard = sortedAthletes.slice(0, 5).map((athlete: any, index: number) => ({
-      rank: index + 1,
-      name: athlete.name,
-      km: parseFloat(athlete.totalKm.toFixed(1)),
-      runs: athlete.runs,
-      avatar: athlete.avatar,
-    }));
-
-    // --- Runner of the Week (most total km) ---
-    const runnerOfWeek = sortedAthletes[0] || null;
-
-    const featuredRunner = runnerOfWeek
-      ? {
-          name: runnerOfWeek.name,
-          avatar: runnerOfWeek.avatar,
-          distance: runnerOfWeek.totalKm.toFixed(1),
-          time: `${runnerOfWeek.runs} run${runnerOfWeek.runs !== 1 ? 's' : ''}`,
-          route: 'Runner of the Week',
-          location: 'Nairobi, Kenya',
-          streak: 'N/A',
-        }
-      : null;
-
-    // --- Total Stats ---
-    const totalDistance = allActivities.reduce(
-      (sum: number, a: any) => sum + (a.distance || 0), 0
+    const totalDistance = Object.values(accumulated.athletes).reduce(
+      (sum, a) => sum + a.totalKm, 0
     );
 
     const payload = {
@@ -147,8 +186,8 @@ export async function GET(request: NextRequest) {
         country: 'Kenya',
       },
       stats: {
-        totalDistanceThisWeek: (totalDistance / 1000).toFixed(0),
-        activitiesCount: allActivities.length,
+        totalDistanceThisWeek: totalDistance.toFixed(0),
+        activitiesCount: accumulated.seen.length,
       },
       recentActivities,
       leaderboard,
@@ -160,8 +199,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       ok: true,
-      activitiesFetched: allActivities.length,
-      pages: page,
+      newActivities: newCount,
+      totalAccumulated: accumulated.seen.length,
+      weekStart: new Date(currentMondayTs).toISOString(),
       lastUpdated: payload.lastUpdated,
     });
 
