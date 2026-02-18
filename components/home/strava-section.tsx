@@ -75,7 +75,7 @@ function InitialsAvatar({ initials, size }: { initials: string; size: 'sm' | 'lg
   const sizes = {
     sm: 'w-10 h-10 text-xs',
     lg: 'w-16 h-16 text-lg',
-    xl: 'w-24 h-24 text-2xl',
+    xl: 'w-20 h-20 md:w-24 md:h-24 text-xl md:text-2xl', // Scaled for mobile
   };
   return (
     <div className={`${sizes[size]} rounded-full bg-[#FC4C02]/20 border-2 border-[#FC4C02]/40 flex items-center justify-center shrink-0`}>
@@ -127,7 +127,7 @@ export function StravaSection() {
     : null;
 
   return (
-    <section ref={ref} id="strava" className="py-24 bg-[#0a0a0a] relative overflow-hidden border-t border-white/5">
+    <section ref={ref} id="strava" className="py-16 md:py-24 bg-[#0a0a0a] relative overflow-hidden border-t border-white/5">
 
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay">
         <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -141,7 +141,7 @@ export function StravaSection() {
       <div className="container mx-auto px-4 relative z-10">
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -160,30 +160,30 @@ export function StravaSection() {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <p className="text-white/60 text-lg max-w-md font-body text-right md:text-left">
+            <p className="text-white/60 text-base md:text-lg max-w-md font-body text-left md:text-right">
               Real-time activity from the We Run Nairobi community.{' '}
               {!loading && (
-                <span className="text-white/40 text-sm flex items-center gap-1 mt-1 justify-end md:justify-start">
+                <span className="text-white/40 text-sm flex flex-wrap items-center gap-1 mt-1 justify-start md:justify-end">
                   {data.club.memberCount.toLocaleString()} members · {data.stats.activitiesCount} runs this week{' '}
                   <TimeAgo timestamp={data.lastUpdated} />
                 </span>
               )}
-              <span className="text-[#FC4C02]">Proof of work.</span>
+              <span className="text-[#FC4C02] ml-1">Proof of work.</span>
             </p>
           </motion.div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* COLUMN 1: Stats + Recent Activity */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex flex-col gap-6 h-[600px]"
+            className="flex flex-col gap-6 md:h-[600px]"
           >
             {/* Stats Card */}
-            <div className="bg-[#111] border border-white/10 p-8 rounded-2xl relative overflow-hidden group shrink-0">
+            <div className="bg-[#111] border border-white/10 p-6 md:p-8 rounded-2xl relative overflow-hidden group shrink-0">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <TrendingUp size={80} />
               </div>
@@ -196,7 +196,7 @@ export function StravaSection() {
                   <span className="text-white/40 text-xs uppercase tracking-widest font-mono mb-1 block">
                     Total Distance
                   </span>
-                  <span className="text-5xl font-display font-bold text-white">
+                  <span className="text-4xl md:text-5xl font-display font-bold text-white">
                     <CountUp end={parseInt(data.stats.totalDistanceThisWeek)} suffix=" KM" />
                   </span>
                 </div>
@@ -212,7 +212,7 @@ export function StravaSection() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-[#111] border border-white/10 p-6 rounded-2xl flex-1 flex flex-col overflow-hidden">
+            <div className="bg-[#111] border border-white/10 p-6 rounded-2xl md:flex-1 flex flex-col overflow-hidden h-[400px] md:h-auto">
               <h3 className="font-display text-sm tracking-widest mb-4 flex items-center gap-2 text-white/60 uppercase shrink-0">
                 <Activity className="text-[#FC4C02]" size={16} />
                 Latest Runs
@@ -246,18 +246,16 @@ export function StravaSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col gap-6 h-[600px]"
+            className="flex flex-col gap-6 md:h-[600px]"
           >
-            {/* Runner of the Week — takes most space */}
-            <div className="bg-[#111] border border-white/10 rounded-2xl flex-1 flex flex-col overflow-hidden group relative">
-              {/* Decorative background glow */}
+            {/* Runner of the Week */}
+            <div className="bg-[#111] border border-white/10 rounded-2xl flex-1 flex flex-col overflow-hidden group relative min-h-[400px] md:min-h-0">
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#FC4C02] blur-[100px] opacity-10 rounded-full" />
               </div>
 
               {data.featuredRunner ? (
-                <div className="p-8 flex flex-col h-full relative z-10">
-                  {/* Top badge */}
+                <div className="p-6 md:p-8 flex flex-col h-full relative z-10">
                   <div className="flex items-center justify-between mb-8">
                     <div className="bg-[#FC4C02]/10 px-3 py-1.5 rounded-full border border-[#FC4C02]/20 text-[10px] font-mono text-[#FC4C02] uppercase tracking-widest">
                       This Week
@@ -265,35 +263,33 @@ export function StravaSection() {
                     <Trophy className="text-[#FC4C02]" size={18} />
                   </div>
 
-                  {/* Big initials centered */}
                   <div className="flex flex-col items-center text-center flex-1 justify-center gap-6">
                     <div className="rotate-3 group-hover:rotate-0 transition-transform duration-500">
                       <InitialsAvatar initials={data.featuredRunner.initials} size="xl" />
                     </div>
                     <div>
                       <div className="text-white/40 text-xs uppercase tracking-widest font-mono mb-2">Runner of the Week</div>
-                      <h3 className="text-3xl font-display font-bold text-white uppercase leading-tight">
+                      <h3 className="text-2xl md:text-3xl font-display font-bold text-white uppercase leading-tight">
                         {data.featuredRunner.name}
                       </h3>
                       <p className="text-white/30 text-sm mt-1">{data.featuredRunner.location}</p>
                     </div>
                   </div>
 
-                  {/* Stats row at bottom */}
                   <div className="grid grid-cols-3 gap-3 border-t border-white/5 pt-6 mt-6">
                     <div className="text-center">
                       <div className="text-[#FC4C02] mb-1"><Zap size={16} className="mx-auto" /></div>
-                      <div className="text-white font-display font-bold">{data.featuredRunner.distance}km</div>
+                      <div className="text-white font-display font-bold text-sm md:text-base">{data.featuredRunner.distance}km</div>
                       <div className="text-[9px] text-white/30 uppercase tracking-widest font-mono">Total</div>
                     </div>
                     <div className="text-center border-x border-white/5">
                       <div className="text-[#FC4C02] mb-1"><Clock size={16} className="mx-auto" /></div>
-                      <div className="text-white font-display font-bold">{data.featuredRunner.time}</div>
+                      <div className="text-white font-display font-bold text-sm md:text-base">{data.featuredRunner.time}</div>
                       <div className="text-[9px] text-white/30 uppercase tracking-widest font-mono">Runs</div>
                     </div>
                     <div className="text-center">
                       <div className="text-[#FC4C02] mb-1"><Award size={16} className="mx-auto" /></div>
-                      <div className="text-white font-display font-bold">#1</div>
+                      <div className="text-white font-display font-bold text-sm md:text-base">#1</div>
                       <div className="text-[9px] text-white/30 uppercase tracking-widest font-mono">Rank</div>
                     </div>
                   </div>
@@ -314,8 +310,8 @@ export function StravaSection() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mb-1">Most Consistent</div>
-                    <div className="text-white font-display font-bold truncate">{mostConsistent.name}</div>
-                    <div className="text-white/40 text-xs">{mostConsistent.runs} runs this week · {mostConsistent.km}km</div>
+                    <div className="text-white font-display font-bold truncate text-sm md:text-base">{mostConsistent.name}</div>
+                    <div className="text-white/40 text-[10px] md:text-xs">{mostConsistent.runs} runs · {mostConsistent.km}km</div>
                   </div>
                   <InitialsAvatar initials={mostConsistent.initials} size="sm" />
                 </div>
@@ -328,9 +324,9 @@ export function StravaSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col h-[600px]"
+            className="flex flex-col md:h-[600px]"
           >
-            <div className="bg-[#111] border border-white/10 p-6 rounded-2xl flex-1 flex flex-col relative overflow-hidden">
+            <div className="bg-[#111] border border-white/10 p-6 rounded-2xl md:flex-1 flex flex-col relative overflow-hidden min-h-[500px] md:min-h-0">
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#FC4C02] blur-[80px] opacity-10 pointer-events-none" />
 
               <h3 className="font-display text-xl tracking-wider mb-8 flex items-center gap-2 text-white relative z-10">
@@ -343,29 +339,29 @@ export function StravaSection() {
                   <motion.div
                     key={runner.rank}
                     whileHover={{ scale: 1.02 }}
-                    className={`p-4 rounded-xl border flex items-center gap-4 transition-all ${
+                    className={`p-3 md:p-4 rounded-xl border flex items-center gap-3 md:gap-4 transition-all ${
                       index === 0
                         ? 'bg-gradient-to-r from-[#FC4C02]/20 to-transparent border-[#FC4C02]/30'
                         : 'bg-white/[0.02] border-white/5'
                     }`}
                   >
-                    <div className={`text-2xl font-display font-bold italic w-8 text-center ${index === 0 ? 'text-[#FC4C02]' : 'text-white/30'}`}>
+                    <div className={`text-xl md:text-2xl font-display font-bold italic w-6 md:w-8 text-center ${index === 0 ? 'text-[#FC4C02]' : 'text-white/30'}`}>
                       #{runner.rank}
                     </div>
                     <InitialsAvatar initials={runner.initials} size="sm" />
                     <div className="flex-1 min-w-0">
-                      <div className="font-display font-bold text-white text-sm truncate">{runner.name}</div>
-                      <div className="text-xs text-white/40">{runner.runs} runs</div>
+                      <div className="font-display font-bold text-white text-xs md:text-sm truncate">{runner.name}</div>
+                      <div className="text-[10px] md:text-xs text-white/40">{runner.runs} runs</div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-xl font-display font-bold text-white">{runner.km}</div>
-                      <div className="text-[10px] text-white/30 uppercase tracking-wider">km</div>
+                      <div className="text-lg md:text-xl font-display font-bold text-white">{runner.km}</div>
+                      <div className="text-[8px] md:text-[10px] text-white/30 uppercase tracking-wider">km</div>
                     </div>
                   </motion.div>
                 ))}
               </div>
 
-              <div className="mt-4 relative z-10">
+              <div className="mt-6 relative z-10">
                 <Link href="https://www.strava.com/clubs/werunnairobi" target="_blank">
                   <Button className="w-full bg-[#FC4C02] hover:bg-[#e34402] text-white font-display font-bold tracking-wider uppercase h-14 text-sm">
                     Join on Strava <ExternalLink size={16} className="ml-2" />
