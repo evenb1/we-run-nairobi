@@ -195,8 +195,7 @@ export async function GET(request: NextRequest) {
       lastUpdated: new Date().toISOString(),
     };
 
-    await redis.set('strava:weekly', JSON.stringify(payload), { ex: 7200 });
-
+await redis.set('strava:weekly', JSON.stringify(payload), { ex: 86400 });
     return NextResponse.json({
       ok: true,
       newActivities: newCount,
