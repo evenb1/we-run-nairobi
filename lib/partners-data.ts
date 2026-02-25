@@ -108,6 +108,23 @@ export const PARTNER_ACTIVATIONS: PartnerActivation[] = [
     }
   },
   {
+    brand: "KOFISI",
+    campaign: "The Riverside Flow",
+    tagline: "Official Workspace Partner",
+    description: "Serving as the home base for our Riverside route, KOFISI provides a premium environment that perfectly bridges professional life and athletic wellness. Their sophisticated spaces offer our community the ultimate pre- and post-run experience.",
+    logo: "KOFISI-Logo_g5lmi3",
+    isLocalLogo: false,
+    media: {
+      type: 'images',
+      ids: [
+        "we-run-nairobi/kofisi/1",
+        "we-run-nairobi/kofisi/6",
+        "we-run-nairobi/kofisi/7"
+      ]
+    }
+  },
+  
+  {
     brand: "Itel",
     campaign: "Pace & Power",
     tagline: "Tech Integration",

@@ -14,37 +14,48 @@ export function HeroSection() {
   const [nextRun, setNextRun] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // FETCH NEXT RUN LOGIC (Same as your original)
+  // FETCH NEXT RUN LOGIC
   useEffect(() => {
     const fetchNextRun = async () => {
       try {
         const now = new Date().toISOString();
+        // Increased maxResults to 15 so we have enough future events to check through
         const response = await fetch(
-          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=1`
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=15`
         );
         const data = await response.json();
         
         if (data.items && data.items.length > 0) {
-          const event = data.items[0];
-          const combinedText = ((event.summary || "") + " " + (event.description || "")).toLowerCase();
-          const allMatches = combinedText.match(/(\d+(?:\.\d+)?)\s*(?:km|k)\b/g);
-          let distanceDisplay = "DISTANCE TBD";
-          if (allMatches) {
-            const numbers = allMatches.map((str: string) => parseFloat(str.replace(/[^\d.]/g, '')));
-            const uniqueSorted = [...new Set(numbers)].sort((a, b) => a - b);
-            distanceDisplay = uniqueSorted.join(' / ') + ' KM';
-          }
-          let rawLocation = event.location || event.summary?.replace(/^WRN\s*/i, '').trim() || "Nairobi";
-          const displayLocation = rawLocation.includes(',') ? rawLocation.split(',')[0].trim() : rawLocation;
-          const startDate = new Date(event.start.dateTime || event.start.date);
-
-          setNextRun({
-            date: startDate,
-            locationName: displayLocation,
-            fullLocation: rawLocation,
-            summary: event.summary,
-            distance: distanceDisplay
+          // Find the first event that falls on a Saturday (getDay() === 6)
+          const saturdayEvent = data.items.find((item: any) => {
+            const eventDate = new Date(item.start.dateTime || item.start.date);
+            return eventDate.getDay() === 6; 
           });
+
+          if (saturdayEvent) {
+            const event = saturdayEvent;
+            const combinedText = ((event.summary || "") + " " + (event.description || "")).toLowerCase();
+            const allMatches = combinedText.match(/(\d+(?:\.\d+)?)\s*(?:km|k)\b/g);
+            let distanceDisplay = "DISTANCE TBD";
+            
+            if (allMatches) {
+              const numbers = allMatches.map((str: string) => parseFloat(str.replace(/[^\d.]/g, '')));
+              const uniqueSorted = [...new Set(numbers)].sort((a, b) => a - b);
+              distanceDisplay = uniqueSorted.join(' / ') + ' KM';
+            }
+            
+            let rawLocation = event.location || event.summary?.replace(/^WRN\s*/i, '').trim() || "Nairobi";
+            const displayLocation = rawLocation.includes(',') ? rawLocation.split(',')[0].trim() : rawLocation;
+            const startDate = new Date(event.start.dateTime || event.start.date);
+
+            setNextRun({
+              date: startDate,
+              locationName: displayLocation,
+              fullLocation: rawLocation,
+              summary: event.summary,
+              distance: distanceDisplay
+            });
+          }
         }
       } catch (error) {
         console.error("Error fetching run:", error);
@@ -55,7 +66,7 @@ export function HeroSection() {
     fetchNextRun();
   }, []);
 
-  // COUNTDOWN TIMER (Same as your original)
+  // COUNTDOWN TIMER
   useEffect(() => {
     if (!nextRun) return;
     const calculateTimeLeft = () => {
@@ -84,7 +95,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-20 pb-20 xl:pt-0 xl:pb-0">
       
-      {/* Background Image - DESIGN KEPT SAME */}
+      {/* Background Image */}
       <div className="absolute inset-0 z-0 bg-neutral-900">
         <CldImage
           src="we-run-nairobi/BARB"
@@ -103,7 +114,7 @@ export function HeroSection() {
 
       <div className="container relative z-10 h-full flex flex-col xl:flex-row items-center xl:justify-between px-4">
         
-        {/* LEFT SIDE - SAME AS YOUR ORIGINAL */}
+        {/* LEFT SIDE */}
         <div className="w-full xl:max-w-4xl xl:pl-20 mt-10 xl:mt-0">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -154,7 +165,7 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* RIGHT SIDE: HUD Box - SAME AS YOUR ORIGINAL */}
+        {/* RIGHT SIDE: HUD Box */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
