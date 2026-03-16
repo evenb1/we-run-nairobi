@@ -4,10 +4,32 @@ import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { Calendar, Clock, ChevronRight, ChevronLeft, Navigation, X, ExternalLink, Info, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { RUNS, RunType } from '@/lib/runs-data';
+
+const IK = "https://ik.imagekit.io/znzj2xg4q/we-run";
+
+const getImageUrl = (id: string) => {
+  if (id.startsWith('http')) return id;
+  if (id.startsWith('/')) return id;
+  const map: Record<string, string> = {
+    'we-run-nairobi/karura/karura': `${IK}/karura/karura_oU_KVKcYL.jpeg`,
+    'we-run-nairobi/baobox': `${IK}/root/baobox_leWBKSxUU.webp`,
+    'we-run-nairobi/BD/1': `${IK}/BD/1_O1saSAcr3.jpg`,
+    'we-run-nairobi/BD/2': `${IK}/BD/2_GlR8zs1EL.jpg`,
+    'we-run-nairobi/BD/3': `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+    'we-run-nairobi/BD/4': `${IK}/BD/4_ekOfJferi.jpg`,
+    'we-run-nairobi/BD/5': `${IK}/BD/5_cCzfHDuJr.jpg`,
+    'we-run-nairobi/kofisi/1': `${IK}/kofisi/1_6ryp5opuq.jpg`,
+    'we-run-nairobi/kofisi/4': `${IK}/kofisi/4_eb0yvBFyEQ.jpg`,
+    'we-run-nairobi/kofisi/5': `${IK}/kofisi/5_rQk2BTf1q.jpg`,
+    'we-run-nairobi/kofisi/6': `${IK}/kofisi/6_JSJY9gMt2.jpg`,
+    'we-run-nairobi/kofisi/7': `${IK}/kofisi/7_vfx74wyKpf.jpg`,
+    'WERUN_X_BARBADOS-194_tdq6mh': `${IK}/root/BARB_xtsaKGani.jpg`,
+  };
+  return map[id] || `${IK}/root/${id}`;
+};
 
 export function ScheduleSection() {
   const ref = useRef(null);
@@ -41,7 +63,6 @@ export function ScheduleSection() {
   return (
     <section ref={ref} id="schedule" className="py-24 bg-background relative">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} className="mb-16">
           <div className="flex items-center gap-3 mb-4">
             <Calendar className="text-foreground" size={24} />
@@ -51,7 +72,6 @@ export function ScheduleSection() {
           <p className="text-muted-foreground text-lg max-w-xl font-body">From dawn patrols to trail adventures, there&apos;s a run for every mood and pace.</p>
         </motion.div>
 
-        {/* Grid */}
         <div className="grid md:grid-cols-2 gap-8">
           {RUNS.map((run, index) => (
             <motion.div
@@ -63,15 +83,19 @@ export function ScheduleSection() {
               onClick={() => setSelectedRun(run)}
             >
               <div className="relative h-72 w-full overflow-hidden bg-neutral-900">
-                <CldImage src={run.image} alt={run.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                <img
+                  src={getImageUrl(run.image)}
+                  alt={run.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/20 to-transparent z-10" />
               </div>
               <div className="p-8 relative z-20">
                 <h3 className="text-3xl font-display font-bold mb-2 uppercase">{run.title}</h3>
                 <p className="text-muted-foreground mb-6 font-body text-sm line-clamp-2">{run.description}</p>
                 <div className="flex flex-wrap gap-4 text-xs text-muted-foreground font-mono uppercase mb-6">
-                   <span className="flex items-center gap-2"><Clock size={14}/> {run.time}</span>
-                   <span className="flex items-center gap-2"><Navigation size={14}/> {run.distances}</span>
+                  <span className="flex items-center gap-2"><Clock size={14}/> {run.time}</span>
+                  <span className="flex items-center gap-2"><Navigation size={14}/> {run.distances}</span>
                 </div>
                 <Button variant="ghost" className="p-0 h-auto text-foreground hover:text-white uppercase text-xs font-bold tracking-widest">
                   Quick View <ChevronRight size={16} className="ml-1" />
@@ -81,7 +105,6 @@ export function ScheduleSection() {
           ))}
         </div>
 
-        {/* --- ADDED THIS HERE: THE MINIMAL CTA --- */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
@@ -94,13 +117,10 @@ export function ScheduleSection() {
             className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors duration-300 group"
           >
             <Instagram size={14} className="group-hover:rotate-12 transition-transform" />
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em]">
-              More updates on Instagram
-            </span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em]">More updates on Instagram</span>
             <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
-
       </div>
 
       <AnimatePresence>
@@ -122,7 +142,11 @@ export function ScheduleSection() {
               <div className="relative h-64 md:h-[400px] shrink-0 overflow-hidden bg-neutral-900">
                 <AnimatePresence mode='wait'>
                   <motion.div key={currentImageIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0">
-                    <CldImage src={selectedRun.gallery[currentImageIndex]} alt={selectedRun.title} fill className="object-cover" priority />
+                    <img
+                      src={getImageUrl(selectedRun.gallery[currentImageIndex])}
+                      alt={selectedRun.title}
+                      className="w-full h-full object-cover"
+                    />
                   </motion.div>
                 </AnimatePresence>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
@@ -138,27 +162,27 @@ export function ScheduleSection() {
                   <p className="text-white/60 mb-8 font-body leading-relaxed">{selectedRun.longDescription}</p>
                   <div className="grid grid-cols-2 gap-4 mb-8">
                     <div className="space-y-1">
-                        <span className="text-[10px] text-white/40 uppercase tracking-tighter font-mono">Paces/Distance</span>
-                        <p className="text-white font-bold">{selectedRun.distances}</p>
+                      <span className="text-[10px] text-white/40 uppercase tracking-tighter font-mono">Paces/Distance</span>
+                      <p className="text-white font-bold">{selectedRun.distances}</p>
                     </div>
                     <div className="space-y-1">
-                        <span className="text-[10px] text-white/40 uppercase tracking-tighter font-mono">Start Time</span>
-                        <p className="text-white font-bold">{selectedRun.time}</p>
+                      <span className="text-[10px] text-white/40 uppercase tracking-tighter font-mono">Start Time</span>
+                      <p className="text-white font-bold">{selectedRun.time}</p>
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Button onClick={() => router.push(`/runs/${selectedRun.id}`)} className="flex-1 bg-white text-black hover:bg-neutral-200 uppercase font-bold tracking-widest py-6">
-                        Full Details <Info className="ml-2 w-4 h-4" />
+                      Full Details <Info className="ml-2 w-4 h-4" />
                     </Button>
                     <Link href={selectedRun.mapUrl} target="_blank" className="flex-1">
-                        <Button variant="outline" className="w-full border-white/20 text-white uppercase font-bold tracking-widest py-6">
-                            Directions <ExternalLink className="ml-2 w-4 h-4" />
-                        </Button>
+                      <Button variant="outline" className="w-full border-white/20 text-white uppercase font-bold tracking-widest py-6">
+                        Directions <ExternalLink className="ml-2 w-4 h-4" />
+                      </Button>
                     </Link>
                   </div>
                 </div>
                 <div className="w-full md:w-[40%] h-[300px] md:h-auto bg-neutral-900 overflow-hidden relative">
-                    <iframe src={selectedRun.mapEmbed} width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" className=" contrast-125 opacity-70 hover:opacity-100 transition-opacity" />
+                  <iframe src={selectedRun.mapEmbed} width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" className="contrast-125 opacity-70 hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             </motion.div>
