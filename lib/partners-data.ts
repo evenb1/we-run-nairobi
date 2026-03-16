@@ -1,6 +1,16 @@
 const VERCEL = "https://werunnairobi.vercel.app";
 
-export const PARTNER_ACTIVATIONS: PartnerActivation[] = [
+export interface PartnerActivation {
+  brand: string;
+  campaign: string;
+  tagline: string;
+  description: string;
+  logo: string;
+  isLocalLogo: boolean;
+  media: 
+    | { type: 'video'; url: string }
+    | { type: 'images'; ids: string[] };
+}[
   {
     brand: "Standard Chartered",
     campaign: "The Official Marathon Prep",
