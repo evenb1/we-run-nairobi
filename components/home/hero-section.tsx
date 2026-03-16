@@ -2,10 +2,8 @@
 
 import { motion } from "framer-motion";
 import { ArrowDown, MapPin, Zap, Navigation } from "lucide-react";
-import { CldImage } from "next-cloudinary";
 import { useEffect, useState } from "react";
 
-// CONFIGURATION
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY || "";
 const CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_ID || "";
 
@@ -14,40 +12,32 @@ export function HeroSection() {
   const [nextRun, setNextRun] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // FETCH NEXT RUN LOGIC
   useEffect(() => {
     const fetchNextRun = async () => {
       try {
         const now = new Date().toISOString();
-        // Increased maxResults to 15 so we have enough future events to check through
         const response = await fetch(
           `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=15`
         );
         const data = await response.json();
-        
         if (data.items && data.items.length > 0) {
-          // Find the first event that falls on a Saturday (getDay() === 6)
           const saturdayEvent = data.items.find((item: any) => {
             const eventDate = new Date(item.start.dateTime || item.start.date);
-            return eventDate.getDay() === 6; 
+            return eventDate.getDay() === 6;
           });
-
           if (saturdayEvent) {
             const event = saturdayEvent;
             const combinedText = ((event.summary || "") + " " + (event.description || "")).toLowerCase();
             const allMatches = combinedText.match(/(\d+(?:\.\d+)?)\s*(?:km|k)\b/g);
             let distanceDisplay = "DISTANCE TBD";
-            
             if (allMatches) {
               const numbers = allMatches.map((str: string) => parseFloat(str.replace(/[^\d.]/g, '')));
               const uniqueSorted = [...new Set(numbers)].sort((a, b) => a - b);
               distanceDisplay = uniqueSorted.join(' / ') + ' KM';
             }
-            
             let rawLocation = event.location || event.summary?.replace(/^WRN\s*/i, '').trim() || "Nairobi";
             const displayLocation = rawLocation.includes(',') ? rawLocation.split(',')[0].trim() : rawLocation;
             const startDate = new Date(event.start.dateTime || event.start.date);
-
             setNextRun({
               date: startDate,
               locationName: displayLocation,
@@ -66,7 +56,6 @@ export function HeroSection() {
     fetchNextRun();
   }, []);
 
-  // COUNTDOWN TIMER
   useEffect(() => {
     if (!nextRun) return;
     const calculateTimeLeft = () => {
@@ -94,27 +83,17 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-20 pb-20 xl:pt-0 xl:pb-0">
-      
-      {/* Background Image */}
       <div className="absolute inset-0 z-0 bg-neutral-900">
-        <CldImage
-          src="we-run-nairobi/BARB"
+        <img
+          src="https://ik.imagekit.io/znzj2xg4q/we-run/root/BARB_xtsaKGani.jpg"
           alt="Runners at dawn"
-          fill
-          priority
-          sizes="100vw"
-          quality={80}
-          placeholder="blur"
-          blurDataURL="https://res.cloudinary.com/dsfgfu2kn/image/upload/w_10,e_blur:1000,q_auto,f_webp/we-run-nairobi/BARB"
-          className="object-cover object-center transition-opacity duration-1000 ease-out"
+          className="w-full h-full object-cover object-center transition-opacity duration-1000 ease-out"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
       </div>
 
       <div className="container relative z-10 h-full flex flex-col xl:flex-row items-center xl:justify-between px-4">
-        
-        {/* LEFT SIDE */}
         <div className="w-full xl:max-w-4xl xl:pl-20 mt-10 xl:mt-0">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -165,7 +144,6 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* RIGHT SIDE: HUD Box */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}

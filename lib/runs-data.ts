@@ -23,6 +23,8 @@ export interface RunType {
   mapEmbed: string;
 }
 
+const IK = "https://ik.imagekit.io/znzj2xg4q/we-run";
+
 export const RUNS: RunType[] = [
   {
     id: 'karura',
@@ -38,15 +40,13 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '120m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Dirt/Hardpack', icon: MapPin },
     ],
-    // If Karura is still Unsplash, keep it. If you uploaded it, use 'we-run-nairobi/karura'
-    image: 'we-run-nairobi/karura/karura',
+    image: `${IK}/karura/karura_oU_KVKcYL.jpeg`,
     gallery: [
-        'we-run-nairobi/karura/karura',
-        // 'we-run-nairobi/karura-2',
+      `${IK}/karura/karura_oU_KVKcYL.jpeg`,
     ],
-    routeImage: 'karura_i1iiil',
+    routeImage: `${IK}/karura/2021-09-15_1YHTB4g9Ib.png`,
     mapUrl: 'https://maps.app.goo.gl/BFyQADiYyWiwbV9T6',
-    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8730088627435!2d36.81462977577999!3d-1.2472603355863843!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f170000b39e3b%3A0x5c64ec570397e766!2sKarura%20Forest%20Gate%20A!5e0!3m2!1sen!2ske!4v1771344794588!5m2!1sen!2ske' 
+    mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8730088627435!2d36.81462977577999!3d-1.2472603355863843!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f170000b39e3b%3A0x5c64ec570397e766!2sKarura%20Forest%20Gate%20A!5e0!3m2!1sen!2ske!4v1771344794588!5m2!1sen!2ske'
   },
   {
     id: 'bao-box',
@@ -62,9 +62,15 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '115m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Tarmac', icon: MapPin },
     ],
-    image: 'we-run-nairobi/baobox',
-    gallery: ['we-run-nairobi/baobox', 'we-run-nairobi/BD/2', 'we-run-nairobi/BD/3', 'we-run-nairobi/BD/4', 'we-run-nairobi/BD/5'],
-    routeImage: 'baobox_fqwtqn',
+    image: `${IK}/root/baobox_leWBKSxUU.webp`,
+    gallery: [
+      `${IK}/root/baobox_leWBKSxUU.webp`,
+      `${IK}/BD/2_GlR8zs1EL.jpg`,
+      `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+      `${IK}/BD/4_ekOfJferi.jpg`,
+      `${IK}/BD/5_cCzfHDuJr.jpg`,
+    ],
+    routeImage: `${IK}/root/baobox_leWBKSxUU.webp`,
     mapUrl: 'https://maps.app.goo.gl/EzzDXYSEmSCXsoGHA',
     mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.86831692985!2d36.787195375779895!3d-1.2503519355895827!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f173a1357bc9b%3A0x6b8743e1274c418e!2sBao%20Box!5e0!3m2!1sen!2ske!4v1771344941562!5m2!1sen!2ske'
   },
@@ -82,9 +88,15 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '115m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Tarmac/Hills', icon: MapPin },
     ],
-    image: 'we-run-nairobi/BD/3',
-    gallery: ['we-run-nairobi/BD/3', 'we-run-nairobi/BD/2', 'we-run-nairobi/BD/4', 'we-run-nairobi/BD/5', 'WERUN_X_BARBADOS-194_tdq6mh'],
-    routeImage: 'BD_f4yadh',
+    image: `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+    gallery: [
+      `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+      `${IK}/BD/2_GlR8zs1EL.jpg`,
+      `${IK}/BD/4_ekOfJferi.jpg`,
+      `${IK}/BD/5_cCzfHDuJr.jpg`,
+      `${IK}/root/BARB_xtsaKGani.jpg`,
+    ],
+    routeImage: `${IK}/BD/3_6Pm4L1kDQ.jpg`,
     mapUrl: 'https://maps.app.goo.gl/Uh55EV9DnrtmXQj79',
     mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8438435826797!2d36.79939537577996!3d-1.2663555356063454!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f17c9e6423597%3A0xf14948a5f019daa7!2s254%20Beer%20District!5e0!3m2!1sen!2ske!4v1771344988626!5m2!1sen!2ske'
   },
@@ -102,9 +114,15 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '114m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Tarmac/Trail', icon: MapPin },
     ],
-    image: 'we-run-nairobi/kofisi/1',
-    gallery: ['we-run-nairobi/kofisi/1', 'we-run-nairobi/kofisi/7', 'we-run-nairobi/kofisi/4', 'we-run-nairobi/kofisi/5', 'we-run-nairobi/kofisi/6'],
-    routeImage: 'Kofisi_qajcdd',
+    image: `${IK}/kofisi/1_6ryp5opuq.jpg`,
+    gallery: [
+      `${IK}/kofisi/1_6ryp5opuq.jpg`,
+      `${IK}/kofisi/7_vfx74wyKpf.jpg`,
+      `${IK}/kofisi/4_eb0yvBFyEQ.jpg`,
+      `${IK}/kofisi/5_rQk2BTf1q.jpg`,
+      `${IK}/kofisi/6_JSJY9gMt2.jpg`,
+    ],
+    routeImage: `${IK}/kofisi/1_6ryp5opuq.jpg`,
     mapUrl: 'https://maps.app.goo.gl/5P1JrCnA2LF1CRPv7',
     mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8396046809994!2d36.78698737578023!3d-1.2691069356092692!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1714b5483c07%3A0x535f2b92a9c0cb03!2sKOFISI%20Square!5e0!3m2!1sen!2ske!4v1771344887962!5m2!1sen!2ske'
   }
