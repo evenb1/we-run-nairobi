@@ -3,24 +3,24 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 
-const IMAGEKIT_BASE = "https://ik.imagekit.io/znzj2xg4q/we-run/videos";
+const VERCEL = "https://werunnairobi.vercel.app";
 
-const videoFiles = [
-  "clip8_ZnY9STG2I9.mp4",
-  "clip3_un5lmPRSl.mp4",
-  "clip11_dKAVnJBVs.mp4",
-  "clip14_G9ParWDBJ.mp4",
-  "clip17_B3h4Abfs6.mp4",
-  "clip9_4GQwB1lqy.mp4",
-  "clip2_juRMCftDS.mp4",
-  "clip12_vyMTdiGo_.mp4",
-  "clip5_TDRZkslqg.mp4",
-  "clip7_5OWamkOxv.mp4",
-  "clip15_sN0M_Egni.mp4",
-  "clip19_t3fOuiDBl.mp4",
-  "clip1_-Gz5lCvfK.mp4",
-  "clip4_ohjObwTtL.mp4",
-  "clip10_W-ov3tmsk.mp4",
+const videoUrls = [
+  `${VERCEL}/videos/clip8.mp4`,
+  `${VERCEL}/videos/clip3.mp4`,
+  `${VERCEL}/videos/clip11.mp4`,
+  `${VERCEL}/videos/clip14.mp4`,
+  `${VERCEL}/videos/clip17.mp4`,
+  `${VERCEL}/videos/clip9.mp4`,
+  `${VERCEL}/videos/clip2.mp4`,
+  `${VERCEL}/videos/clip12.mp4`,
+  `${VERCEL}/videos/clip5.mp4`,
+  `${VERCEL}/videos/clip7.mp4`,
+  `${VERCEL}/videos/clip15.mp4`,
+  `${VERCEL}/videos/clip19.mp4`,
+  `${VERCEL}/videos/clip1.mp4`,
+  `${VERCEL}/videos/clip4.mp4`,
+  `${VERCEL}/videos/clip10.mp4`,
 ];
 
 const containerVariants: Variants = {
@@ -33,7 +33,7 @@ const containerVariants: Variants = {
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 50, scale: 0.9 },
-  visible: {
+  visible: { 
     opacity: 1, y: 0, scale: 1,
     transition: { type: "spring", stiffness: 100, damping: 20 }
   }
@@ -59,7 +59,7 @@ export function VideoReelSection() {
   return (
     <section className="py-24 bg-neutral-950 overflow-hidden">
       <div className="container mx-auto px-4 mb-10">
-        <motion.h2
+        <motion.h2 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -68,7 +68,7 @@ export function VideoReelSection() {
         >
           In Motion
         </motion.h2>
-        <motion.p
+        <motion.p 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -79,29 +79,29 @@ export function VideoReelSection() {
         </motion.p>
       </div>
 
-      <div
-        ref={scrollRef}
+      <div 
+        ref={scrollRef} 
         className={`w-full ${!isMobile ? 'overflow-x-auto no-scrollbar cursor-default' : 'overflow-hidden'}`}
       >
-        <motion.div
+        <motion.div 
           className={`flex gap-6 pl-4 md:pl-[max(1rem,calc((100vw-1280px)/2))] pr-10 ${isMobile ? 'cursor-grab active:cursor-grabbing w-max' : 'w-max pb-6'}`}
           drag={isMobile ? "x" : false}
-          dragConstraints={{ right: 0, left: -width }}
-          dragElastic={0.1}
+          dragConstraints={{ right: 0, left: -width }} 
+          dragElastic={0.1} 
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          {videoFiles.map((file, index) => (
-            <motion.div
+          {videoUrls.map((url, index) => (
+            <motion.div 
               key={index}
               variants={itemVariants}
               whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               className="relative flex-shrink-0 w-[300px] h-[533px] md:w-[400px] md:h-[711px] rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 shadow-2xl"
             >
               <video
-                src={`${IMAGEKIT_BASE}/${file}`}
+                src={url}
                 className="w-full h-full object-cover pointer-events-none"
                 autoPlay
                 muted

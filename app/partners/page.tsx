@@ -106,35 +106,35 @@ export default function PartnersPage() {
               className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center" 
             >
               <div className={`lg:col-span-6 w-full ${index % 2 !== 0 ? 'lg:order-last' : ''}`}>
-                {activation.media.type === 'video' ? (
-                  <div className="relative w-full max-w-[320px] md:max-w-[420px] mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-[#111] border border-white/10 shadow-2xl">
-                    <video 
-                      src={getVideoUrl(activation.media.url)} 
-                      autoPlay loop muted playsInline
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-3 md:gap-4 h-[500px] md:h-[650px]">
-                    <div className="col-span-1 h-full relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
-                      {activation.media.ids[0] && (
-                        <img src={getImageUrl(activation.media.ids[0])} alt={`${activation.brand} 1`} className="w-full h-full object-cover" />
-                      )}
-                    </div>
-                    <div className="col-span-1 grid grid-rows-2 gap-3 md:gap-4">
-                      <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
-                        {activation.media.ids[1] && (
-                          <img src={getImageUrl(activation.media.ids[1])} alt={`${activation.brand} 2`} className="w-full h-full object-cover" />
-                        )}
-                      </div>
-                      <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
-                        {activation.media.ids[2] && (
-                          <img src={getImageUrl(activation.media.ids[2])} alt={`${activation.brand} 3`} className="w-full h-full object-cover" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
+{activation.media.type === 'video' ? (
+  <div className="relative w-full max-w-[320px] md:max-w-[420px] mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-[#111] border border-white/10 shadow-2xl">
+    <video 
+      src={getVideoUrl(activation.media.url)} 
+      autoPlay loop muted playsInline
+      className="w-full h-full object-cover"
+    />
+  </div>
+) : activation.media.type === 'images' && Array.isArray(activation.media.urls) ? (
+  <div className="grid grid-cols-2 gap-3 md:gap-4 h-[500px] md:h-[650px]">
+    <div className="col-span-1 h-full relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
+      {activation.media.urls[0] && (
+        <img src={getImageUrl(activation.media.urls[0])} alt={`${activation.brand} 1`} className="w-full h-full object-cover" />
+      )}
+    </div>
+    <div className="col-span-1 grid grid-rows-2 gap-3 md:gap-4">
+      <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
+        {activation.media.urls[1] && (
+          <img src={getImageUrl(activation.media.urls[1])} alt={`${activation.brand} 2`} className="w-full h-full object-cover" />
+        )}
+      </div>
+      <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
+        {activation.media.urls[2] && (
+          <img src={getImageUrl(activation.media.urls[2])} alt={`${activation.brand} 3`} className="w-full h-full object-cover" />
+        )}
+      </div>
+    </div>
+  </div>
+) : null}
               </div>
 
               <div className="lg:col-span-6 flex flex-col justify-center">

@@ -3,24 +3,44 @@
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useLayoutEffect } from 'react'; 
-import { 
-  ChevronLeft, 
-  ExternalLink, 
-  Maximize2,
-  Activity,
-  Info
-} from 'lucide-react';
+import { ChevronLeft, ExternalLink, Activity, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { RUNS } from '@/lib/runs-data';
+
+const IK = "https://ik.imagekit.io/znzj2xg4q/we-run";
+
+const getImageUrl = (id: string) => {
+  if (!id) return '';
+  if (id.startsWith('http')) return id;
+  if (id.startsWith('/')) return id;
+  const map: Record<string, string> = {
+    'we-run-nairobi/karura/karura': `${IK}/karura/karura_oU_KVKcYL.jpeg`,
+    'we-run-nairobi/baobox': `${IK}/root/baobox_leWBKSxUU.webp`,
+    'we-run-nairobi/BD/1': `${IK}/BD/1_O1saSAcr3.jpg`,
+    'we-run-nairobi/BD/2': `${IK}/BD/2_GlR8zs1EL.jpg`,
+    'we-run-nairobi/BD/3': `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+    'we-run-nairobi/BD/4': `${IK}/BD/4_ekOfJferi.jpg`,
+    'we-run-nairobi/BD/5': `${IK}/BD/5_cCzfHDuJr.jpg`,
+    'we-run-nairobi/kofisi/1': `${IK}/kofisi/1_6ryp5opuq.jpg`,
+    'we-run-nairobi/kofisi/4': `${IK}/kofisi/4_eb0yvBFyEQ.jpg`,
+    'we-run-nairobi/kofisi/5': `${IK}/kofisi/5_rQk2BTf1q.jpg`,
+    'we-run-nairobi/kofisi/6': `${IK}/kofisi/6_JSJY9gMt2.jpg`,
+    'we-run-nairobi/kofisi/7': `${IK}/kofisi/7_vfx74wyKpf.jpg`,
+    'WERUN_X_BARBADOS-194_tdq6mh': `${IK}/root/BARB_xtsaKGani.jpg`,
+    'karura_i1iiil': `${IK}/karura/karura_oU_KVKcYL.jpeg`,
+    'baobox_fqwtqn': `${IK}/root/baobox_leWBKSxUU.webp`,
+    'BD_f4yadh': `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+    'Kofisi_qajcdd': `${IK}/kofisi/1_6ryp5opuq.jpg`,
+  };
+  return map[id] || `${IK}/root/${id}`;
+};
 
 export default function DynamicRunPage() {
   const params = useParams();
   const router = useRouter();
   const run = RUNS.find(r => r.id === params.id);
 
-  // Fixes the scroll-from-bottom jump
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -50,17 +70,21 @@ export default function DynamicRunPage() {
         </div>
       </nav>
 
-      {/* --- HERO --- */}
+      {/* Hero */}
       <section className="relative h-screen w-full overflow-hidden bg-neutral-900">
         <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 1.5 }} className="absolute inset-0">
-          <CldImage src={run.gallery[0]} alt={run.title} fill priority className="object-cover opacity-70" />
+          <img
+            src={getImageUrl(run.gallery[0])}
+            alt={run.title}
+            className="w-full h-full object-cover opacity-70"
+          />
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
         <div className="absolute bottom-12 left-0 w-full px-6 md:px-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl">
-             <p className="text-xs font-mono uppercase tracking-[0.4em] text-white/60 mb-4 flex items-center gap-2">
-               <span className="w-4 h-[1px] bg-white/40" /> {run.location}
-             </p>
+            <p className="text-xs font-mono uppercase tracking-[0.4em] text-white/60 mb-4 flex items-center gap-2">
+              <span className="w-4 h-[1px] bg-white/40" /> {run.location}
+            </p>
             <h1 className="text-6xl md:text-[10vw] font-display font-black leading-[0.8] uppercase italic -ml-1">
               {run.title}
             </h1>
@@ -78,11 +102,11 @@ export default function DynamicRunPage() {
         </div>
       </section>
 
-      {/* --- CONTENT SECTION --- */}
+      {/* Content */}
       <section className="py-24 px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 max-w-7xl mx-auto">
           
-          {/* LEFT SIDE: DETAILS + ROUTE IMAGE */}
+          {/* Left */}
           <div className="md:col-span-5 flex flex-col">
             <h2 className="text-xs font-mono uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-4">
               <span className="w-8 h-[1px] bg-white/20" /> The Environment
@@ -103,61 +127,75 @@ export default function DynamicRunPage() {
               ))}
             </div>
 
-            {/* --- STRAVA ROUTE PLACEMENT: BELOW STATS --- */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="relative w-full aspect-[4/3] rounded-sm overflow-hidden "
+              className="relative w-full aspect-[4/3] rounded-sm overflow-hidden"
             >
-               <CldImage 
-                src={run.routeImage || run.image} 
-                alt="Strava Route" 
-                fill 
-                className="object-contain p-4 transition-all duration-700"
-               />
-               <div className="absolute top-4 right-4 flex items-center gap-2  backdrop-blur-md px-3 py-2 rounded-full border border-white/10">
-                  <Activity size={12} className="text-orange-500" />
-                  <span className="text-[9px] font-mono uppercase tracking-widest">Map Route</span>
-               </div>
+              <img
+                src={getImageUrl(run.routeImage || run.image)}
+                alt="Strava Route"
+                className="w-full h-full object-contain p-4 transition-all duration-700"
+              />
+              <div className="absolute top-4 right-4 flex items-center gap-2 backdrop-blur-md px-3 py-2 rounded-full border border-white/10">
+                <Activity size={12} className="text-orange-500" />
+                <span className="text-[9px] font-mono uppercase tracking-widest">Map Route</span>
+              </div>
             </motion.div>
-             {/* Course Intelligence Note */}
-              <motion.div 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                className=" p-6 pt-0  "
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Info size={14} className="text-orange-500" />
-                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] font-bold">Route Details</span>
-                </div>
-                <p className="text-xs text-neutral-400 leading-relaxed font-body">
-                  This track is modular. All distance targets — <span className="text-white">{run.distances}</span> — are integrated into this single route. Turnaround markers and lead runners will guide you to your specific target.
-                </p>
-              </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="p-6 pt-0"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Info size={14} className="text-orange-500" />
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] font-bold">Route Details</span>
+              </div>
+              <p className="text-xs text-neutral-400 leading-relaxed font-body">
+                This track is modular. All distance targets — <span className="text-white">{run.distances}</span> — are integrated into this single route. Turnaround markers and lead runners will guide you to your specific target.
+              </p>
+            </motion.div>
           </div>
 
-          {/* RIGHT SIDE: MASONRY (RESTORED) */}
+          {/* Right — Masonry */}
           <div className="md:col-span-7 grid grid-cols-2 gap-4 md:gap-6">
             <div className="relative h-[400px] md:h-[600px] rounded-sm overflow-hidden group bg-neutral-900">
-               <CldImage src={run.gallery[1] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+              <img
+                src={getImageUrl(run.gallery[1] || run.image)}
+                alt="Detail"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
             </div>
             <div className="space-y-4 md:space-y-6">
-               <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group bg-neutral-900">
-                  <CldImage src={run.gallery[2] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-               </div>
-               <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group bg-neutral-900">
-                  <CldImage src={run.gallery[3] || run.image} alt="Detail" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-               </div>
+              <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group bg-neutral-900">
+                <img
+                  src={getImageUrl(run.gallery[2] || run.image)}
+                  alt="Detail"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+              <div className="relative h-[190px] md:h-[285px] rounded-sm overflow-hidden group bg-neutral-900">
+                <img
+                  src={getImageUrl(run.gallery[3] || run.image)}
+                  alt="Detail"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
             </div>
             <div className="col-span-2 relative h-[300px] md:h-[450px] rounded-sm overflow-hidden group bg-neutral-900">
-               <CldImage src={run.gallery[4] || run.image} alt="Wide" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+              <img
+                src={getImageUrl(run.gallery[4] || run.image)}
+                alt="Wide"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- MAP SECTION --- */}
+      {/* Map */}
       <section className="py-24 px-6 md:px-12 bg-neutral-950 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
