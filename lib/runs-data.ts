@@ -90,7 +90,7 @@ export const RUNS: RunType[] = [
     ],
     image: `${IK}/BD/3_6Pm4L1kDQ.jpg`,
     gallery: [
-      `${IK}/BD/3 (1).jpg`,
+      `${IK}/BD/3.jpg`,
       `${IK}/BD/2_GlR8zs1EL.jpg`,
       `${IK}/BD/4.jpg`,
       `${IK}/BD/5.jpg`,
