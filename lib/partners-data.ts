@@ -10,7 +10,9 @@ export interface PartnerActivation {
   media: 
     | { type: 'video'; url: string }
     | { type: 'images'; ids: string[] };
-}[
+}
+
+export const PARTNER_ACTIVATIONS: PartnerActivation[] = [
   {
     brand: "Standard Chartered",
     campaign: "The Official Marathon Prep",
