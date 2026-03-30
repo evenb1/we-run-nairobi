@@ -88,7 +88,7 @@ export const RUNS: RunType[] = [
       { label: 'Elevation', value: '115m Gain', icon: ArrowRight },
       { label: 'Surface', value: 'Tarmac/Hills', icon: MapPin },
     ],
-    image: `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+    image: `${IK}/BD/3.jpg`,
     gallery: [
       `${IK}/BD/3.jpg`,
       `${IK}/BD/2_GlR8zs1EL.jpg`,
