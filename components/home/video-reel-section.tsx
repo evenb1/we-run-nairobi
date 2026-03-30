@@ -93,7 +93,7 @@ export function VideoReelSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          {videoUrls.map((url, index) => (
+          {videoUrls.slice(0, 8).map((url, index) => (
             <motion.div 
               key={index}
               variants={itemVariants}
@@ -107,7 +107,7 @@ export function VideoReelSection() {
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload="none"
               />
               <div className="absolute inset-0 bg-black/20 hover:bg-transparent transition-colors duration-300" />
             </motion.div>

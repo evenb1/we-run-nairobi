@@ -118,18 +118,21 @@ export default function PartnersPage() {
                   <div className="grid grid-cols-2 gap-3 md:gap-4 h-[500px] md:h-[650px]">
                     <div className="col-span-1 h-full relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
                       {activation.media.ids[0] && (
-                        <img src={getImageUrl(activation.media.ids[0])} alt={`${activation.brand} 1`} className="w-full h-full object-cover" />
+                        <img src={getImageUrl(activation.media.ids[0])} alt={`${activation.brand} 1`}   loading="lazy"
+ className="w-full h-full object-cover" />
                       )}
                     </div>
                     <div className="col-span-1 grid grid-rows-2 gap-3 md:gap-4">
                       <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
                         {activation.media.ids[1] && (
-                          <img src={getImageUrl(activation.media.ids[1])} alt={`${activation.brand} 2`} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(activation.media.ids[1])} alt={`${activation.brand} 2`}   loading="lazy"
+ className="w-full h-full object-cover" />
                         )}
                       </div>
                       <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
                         {activation.media.ids[2] && (
-                          <img src={getImageUrl(activation.media.ids[2])} alt={`${activation.brand} 3`} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(activation.media.ids[2])} alt={`${activation.brand} 3`}   loading="lazy"
+ className="w-full h-full object-cover" />
                         )}
                       </div>
                     </div>
@@ -142,7 +145,8 @@ export default function PartnersPage() {
                   {activation.isLocalLogo ? (
                     <Image src={activation.logo} alt={activation.brand} fill className="object-contain object-left brightness-0 invert opacity-80" />
                   ) : (
-                    <img src={getImageUrl(activation.logo)} alt={activation.brand} className="w-full h-full object-contain object-left brightness-0 invert opacity-80" />
+                    <img src={getImageUrl(activation.logo)} alt={activation.brand}   loading="lazy"
+ className="w-full h-full object-contain object-left brightness-0 invert opacity-80" />
                   )}
                 </div>
 
