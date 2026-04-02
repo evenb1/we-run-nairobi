@@ -26,7 +26,7 @@ const getImageUrl = (id: string) => {
     'we-run-nairobi/kofisi/7': `${IK}/kofisi/7_vfx74wyKpf.jpg`,
     'we-run-nairobi/BD/1': `${IK}/BD/1_O1saSAcr3.jpg`,
     'we-run-nairobi/BD/2': `${IK}/BD/2_GlR8zs1EL.jpg`,
-    'we-run-nairobi/BD/3': `${IK}/BD/3_6Pm4L1kDQ.jpg`,
+    'we-run-nairobi/BD/3': `${IK}/BD/4.jpg`,
     'we-run-nairobi/gallery/baobox-1': `${IK}/root/baobox_leWBKSxUU.webp`,
     'we-run-nairobi/gallery/baobox-2': `${IK}/root/baobox_leWBKSxUU.webp`,
     'we-run-nairobi/gallery/baobox-3': `${IK}/root/baobox_leWBKSxUU.webp`,
@@ -97,71 +97,75 @@ export default function PartnersPage() {
         </div>
 
         <div className="space-y-32 md:space-y-48">
-          {PARTNER_ACTIVATIONS.map((activation, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center"
-            >
-              <div className={`lg:col-span-6 w-full ${index % 2 !== 0 ? 'lg:order-last' : ''}`}>
-                {activation.media.type === 'video' ? (
-                  <div className="relative w-full max-w-[320px] md:max-w-[420px] mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-[#111] border border-white/10 shadow-2xl">
-                    <video
-                      src={getVideoUrl(activation.media.url)}
-                      autoPlay loop muted playsInline
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : activation.media.type === 'images' && Array.isArray(activation.media.ids) ? (
-                  <div className="grid grid-cols-2 gap-3 md:gap-4 h-[500px] md:h-[650px]">
-                    <div className="col-span-1 h-full relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
-                      {activation.media.ids[0] && (
-                        <img src={getImageUrl(activation.media.ids[0])} alt={`${activation.brand} 1`}   loading="lazy"
- className="w-full h-full object-cover" />
-                      )}
-                    </div>
-                    <div className="col-span-1 grid grid-rows-2 gap-3 md:gap-4">
-                      <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
-                        {activation.media.ids[1] && (
-                          <img src={getImageUrl(activation.media.ids[1])} alt={`${activation.brand} 2`}   loading="lazy"
- className="w-full h-full object-cover" />
-                        )}
-                      </div>
-                      <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
-                        {activation.media.ids[2] && (
-                          <img src={getImageUrl(activation.media.ids[2])} alt={`${activation.brand} 3`}   loading="lazy"
- className="w-full h-full object-cover" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
+          {PARTNER_ACTIVATIONS.map((activation, index) => {
+            const isTextOnly = activation.brand.toLowerCase() === 'itel';
 
-              <div className="lg:col-span-6 flex flex-col justify-center">
-                <div className="relative h-20 md:h-28 w-64 md:w-80 mb-10">
-                  {activation.isLocalLogo ? (
-                    <Image src={activation.logo} alt={activation.brand} fill className="object-contain object-left brightness-0 invert opacity-80" />
-                  ) : (
-                    <img src={getImageUrl(activation.logo)} alt={activation.brand}   loading="lazy"
- className="w-full h-full object-contain object-left brightness-0 invert opacity-80" />
-                  )}
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+              >
+                {/* MEDIA COLUMN - HIDDEN IF TEXT ONLY */}
+                {!isTextOnly && (
+                  <div className={`lg:col-span-6 w-full ${index % 2 !== 0 ? 'lg:order-last' : ''}`}>
+                    {activation.media.type === 'video' ? (
+                      <div className="relative w-full max-w-[320px] md:max-w-[420px] mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-[#111] border border-white/10 shadow-2xl">
+                        <video
+                          src={getVideoUrl(activation.media.url)}
+                          autoPlay loop muted playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : activation.media.type === 'images' && Array.isArray(activation.media.ids) ? (
+                      <div className="grid grid-cols-2 gap-3 md:gap-4 h-[400px] md:h-[600px] w-full">
+                        <div className="col-span-1 h-full relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111]">
+                          {activation.media.ids[0] && (
+                            <img src={getImageUrl(activation.media.ids[0])} alt={`${activation.brand} 1`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                          )}
+                        </div>
+                        <div className="col-span-1 grid grid-rows-2 gap-3 md:gap-4 h-full">
+                          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111] h-full">
+                            {activation.media.ids[1] && (
+                              <img src={getImageUrl(activation.media.ids[1])} alt={`${activation.brand} 2`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                            )}
+                          </div>
+                          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#111] h-full">
+                            {activation.media.ids[2] && (
+                              <img src={getImageUrl(activation.media.ids[2])} alt={`${activation.brand} 3`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+
+                {/* TEXT COLUMN */}
+                <div className={`${isTextOnly ? 'lg:col-span-8 lg:col-start-3 items-center text-center' : 'lg:col-span-6 items-start'} flex flex-col justify-center`}>
+                  <div className={`relative h-20 md:h-28 w-64 md:w-80 mb-10 ${isTextOnly ? 'mx-auto' : ''}`}>
+                    {activation.isLocalLogo ? (
+                      <Image src={activation.logo} alt={activation.brand} fill className={`object-contain brightness-0 invert opacity-80 ${isTextOnly ? 'object-center' : 'object-left'}`} />
+                    ) : (
+                      <img src={getImageUrl(activation.logo)} alt={activation.brand} loading="lazy" className={`w-full h-full object-contain brightness-0 invert opacity-80 ${isTextOnly ? 'object-center' : 'object-left'}`} />
+                    )}
+                  </div>
+
+                  <p className="text-[#FC4C02] font-mono text-[10px] md:text-xs uppercase tracking-[0.2em] mb-4">
+                    {activation.tagline}
+                  </p>
+                  <h3 className="text-4xl md:text-6xl font-display font-bold uppercase leading-[1.1] mb-8 text-white">
+                    {activation.campaign}
+                  </h3>
+                  <p className={`text-white/60 font-body text-lg md:text-2xl leading-relaxed ${isTextOnly ? 'max-w-2xl mx-auto' : ''}`}>
+                    {activation.description}
+                  </p>
                 </div>
-
-                <p className="text-[#FC4C02] font-mono text-[10px] md:text-xs uppercase tracking-[0.2em] mb-4">
-                  {activation.tagline}
-                </p>
-                <h3 className="text-4xl md:text-6xl font-display font-bold uppercase leading-[1.1] mb-8 text-white">
-                  {activation.campaign}
-                </h3>
-                <p className="text-white/60 font-body text-lg md:text-2xl leading-relaxed">
-                  {activation.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
