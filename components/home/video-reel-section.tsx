@@ -7,7 +7,7 @@ const VERCEL = "https://werunnairobi.vercel.app";
 
 const videoUrls = [
   `${VERCEL}/videos/clip8.mp4`,
-  `${VERCEL}/videos/clip3.mp4`,
+
   `${VERCEL}/videos/clip11.mp4`,
   `${VERCEL}/videos/clip14.mp4`,
   `${VERCEL}/videos/clip17.mp4`,
@@ -15,6 +15,7 @@ const videoUrls = [
   `${VERCEL}/videos/clip2.mp4`,
   `${VERCEL}/videos/clip12.mp4`,
   `${VERCEL}/videos/clip5.mp4`,
+    `${VERCEL}/videos/clip3.mp4`,
   `${VERCEL}/videos/clip7.mp4`,
   `${VERCEL}/videos/clip15.mp4`,
   `${VERCEL}/videos/clip19.mp4`,
