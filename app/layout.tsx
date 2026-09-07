@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { LayoutWrapper } from "@/components/layout-wrapper";
+import { Analytics } from "@vercel/analytics/next"
+
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -40,6 +42,7 @@ export default function RootLayout({
         <LayoutWrapper>
           {children}
         </LayoutWrapper>
+        <Analytics />
       </body>
     </html>
   );
